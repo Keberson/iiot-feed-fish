@@ -1,0 +1,36 @@
+.sidabar-menu {
+    height: 100%;
+}
+
+.sidebar-menu-title {
+    color: white !important;
+    text-align: center;
+    margin: 0 !important;
+}
+
+.sidebar-menu-title {
+    opacity: 1;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.sidebar-menu-title.collapsed {
+    opacity: 0;
+    width: 0;
+    display: none;
+}
+
+.sidebar-menu-title-wrapper {
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 40px;
+}
+
+.content-wrapper {
+    padding: 20px 30px;
+}
+
+.content {
+    flex-grow: 1;
+}
