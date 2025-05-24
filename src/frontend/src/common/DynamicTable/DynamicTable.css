@@ -1,8 +1,8 @@
-.paginated-table-wrapper {
+.dynamic-table-wrapper {
     flex-grow: 1;
     justify-content: space-between !important;
 }
 
-.paginated-table-top-part {
+.dynamic-table-top-part {
     gap: 20px;
 }

@@ -1,11 +1,12 @@
 import { useRef } from "react";
 import { Flex, Typography } from "antd";
 
-import DynamicTable from "../../common/DynamicTable/DynamicTable";
+import DynamicTable from "#common/DynamicTable/DynamicTable";
 
-import type { IFeedingTableItem } from "../../types/feeding.types";
+import type { IFeedingTableItem } from "#types/feeding.types";
 
-import { columns, mockData } from "./props";
+import FeedingToolbox from "./FeedingToolbox/FeedingToolbox";
+import { columns, filterSchema, mockData } from "./props";
 
 import "./Feeding.css";
 
@@ -20,12 +21,13 @@ const Feeding = () => {
                 <Title level={3}>Управление кормлением</Title>
             </Flex>
             <DynamicTable<IFeedingTableItem>
-                filter
+                filter={filterSchema}
                 pagination
                 topRef={titleRef}
                 columns={columns}
                 data={mockData}
                 rowKey="id"
+                toolbox={<FeedingToolbox />}
             />
         </>
     );

@@ -1,18 +1,21 @@
-import { useRef, type RefObject } from "react";
-import { Button, Flex, Pagination, Table } from "antd";
+import { useRef, type ReactNode, type RefObject } from "react";
+import { Flex, Pagination, Table } from "antd";
 
 import useResizable from "#core/useResizable/useResizable";
 import prepareDynamicTableSchema from "#core/prepareDynamicTableSchema/prepareDynamicTableSchema";
 
+import type { IFormRenderItem } from "#common/FormRender/interface";
+
 import EditableRow from "./EditableRow/EditableRow";
 import EditableCell from "./EditableCell/EditableCell";
+import DynamicTableToolbox from "./DynamicTableToolbox/DynamicTableToolbox";
 
 import type { DynamicTableColumnType } from "./types";
 
 import "./DynamicTable.css";
 
 interface DynamicTableProps<T> {
-    filter?: boolean;
+    filter?: IFormRenderItem[];
     pagination?: boolean;
     topRef?: RefObject<HTMLElement | null>;
     bottomRef?: RefObject<HTMLElement | null>;
@@ -20,10 +23,11 @@ interface DynamicTableProps<T> {
     columns: DynamicTableColumnType<T>[];
     data: T[];
     rowKey: keyof T;
+    toolbox?: ReactNode;
 }
 
 const DynamicTable = <T,>({
-    filter = false,
+    filter,
     pagination = false,
     topRef,
     bottomRef,
@@ -31,6 +35,7 @@ const DynamicTable = <T,>({
     columns,
     data,
     rowKey,
+    toolbox,
 }: DynamicTableProps<T>): React.ReactElement => {
     const { ref, height } = useResizable();
     const toolboxRef = useRef<HTMLElement>(null);
@@ -49,16 +54,12 @@ const DynamicTable = <T,>({
     };
 
     return (
-        <Flex ref={ref} vertical className="paginated-table-wrapper">
-            <Flex vertical className="paginated-table-top-part">
-                {filter && (
-                    <Flex ref={toolboxRef} className="paginated-table-toolbox">
-                        <Button>123</Button>
-                    </Flex>
-                )}
+        <Flex ref={ref} vertical className="dynamic-table-wrapper">
+            <Flex vertical className="dynamic-table-top-part">
+                {filter && <DynamicTableToolbox filter={filter} panel={toolbox} />}
                 <Table
                     components={{ body: { row: EditableRow, cell: EditableCell } }}
-                    rootClassName="paginated-table"
+                    rootClassName="dynamic-table"
                     columns={prepareDynamicTableSchema(columns, handleSave)}
                     dataSource={data}
                     rowKey={rowKey}

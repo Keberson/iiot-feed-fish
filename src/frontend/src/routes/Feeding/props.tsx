@@ -1,9 +1,10 @@
 import { DeleteOutlined } from "@ant-design/icons";
 
-import type { IDynamicTableSchemaItem } from "#common/DynamicTable/types";
+import type { DynamicTableColumnType } from "#common/DynamicTable/types";
 import type { IFeedingTableItem } from "#types/feeding.types";
+import type { IFormRenderItem } from "#common/FormRender/interface";
 
-export const columns: IDynamicTableSchemaItem<IFeedingTableItem>[] = [
+export const columns: DynamicTableColumnType<IFeedingTableItem>[] = [
     {
         title: "Бассейн",
         dataIndex: "pool",
@@ -32,6 +33,22 @@ export const columns: IDynamicTableSchemaItem<IFeedingTableItem>[] = [
         key: "edit",
         render: () => <DeleteOutlined />,
         width: 50,
+    },
+];
+
+export const filterSchema: IFormRenderItem[] = [
+    {
+        type: "input",
+        name: "input",
+        label: "Фильтр №1",
+        initValue: "бла бла бла",
+    },
+    {
+        type: "select",
+        name: "select",
+        label: "Фильтр №2",
+        options: [{ value: "1", label: "Бассейн 1" }],
+        initValue: "1",
     },
 ];
 
