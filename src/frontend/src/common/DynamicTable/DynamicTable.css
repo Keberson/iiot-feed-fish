@@ -2,3 +2,7 @@
     flex-grow: 1;
     justify-content: space-between !important;
 }
+
+.paginated-table-top-part {
+    gap: 20px;
+}
