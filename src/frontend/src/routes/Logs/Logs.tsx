@@ -19,6 +19,7 @@ const Logs = () => {
             </Title>
             <DynamicTable<ILogTableItem>
                 filter={filterSchema}
+                exported
                 pagination
                 topRef={titleRef}
                 columns={columns}

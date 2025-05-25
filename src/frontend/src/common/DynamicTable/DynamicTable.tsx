@@ -17,6 +17,7 @@ import "./DynamicTable.css";
 interface DynamicTableProps<T> {
     filter?: IFormRenderItem[];
     pagination?: boolean;
+    exported?: boolean;
     topRef?: RefObject<HTMLElement | null>;
     bottomRef?: RefObject<HTMLElement | null>;
     stretchFactor?: number;
@@ -28,7 +29,8 @@ interface DynamicTableProps<T> {
 
 const DynamicTable = <T,>({
     filter,
-    pagination = false,
+    pagination,
+    exported,
     topRef,
     bottomRef,
     stretchFactor = 0.7,
@@ -56,7 +58,9 @@ const DynamicTable = <T,>({
     return (
         <Flex ref={ref} vertical className="dynamic-table-wrapper">
             <Flex vertical className="dynamic-table-top-part">
-                {filter && <DynamicTableToolbox filter={filter} panel={toolbox} />}
+                {filter && (
+                    <DynamicTableToolbox filter={filter} panel={toolbox} exported={exported} />
+                )}
                 <Table
                     components={{ body: { row: EditableRow, cell: EditableCell } }}
                     rootClassName="dynamic-table"
