@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { Button, Modal } from "antd";
+import { Button, Flex, Modal } from "antd";
 
 import FormRender from "#common/FormRender/FormRender";
 
 import FeedingModalFooter from "./FeedingModalFooter/FeedingModalFooter";
 import { createSchema } from "./props";
+
+import "./FeedingToolbox.css";
 
 const FeedingToolbox = () => {
     const [openModal, setOpenModal] = useState(false);
@@ -25,7 +27,9 @@ const FeedingToolbox = () => {
                 title="Создание задачи кормления"
                 footer={<FeedingModalFooter />}
             >
-                <FormRender schema={createSchema} />
+                <Flex className="feeding-create-wrapper">
+                    <FormRender schema={createSchema} />
+                </Flex>
             </Modal>
         </>
     );

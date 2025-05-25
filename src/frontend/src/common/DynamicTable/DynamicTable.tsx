@@ -31,7 +31,7 @@ const DynamicTable = <T,>({
     pagination = false,
     topRef,
     bottomRef,
-    stretchFactor = 0.8,
+    stretchFactor = 0.7,
     columns,
     data,
     rowKey,

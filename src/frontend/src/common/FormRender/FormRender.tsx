@@ -1,6 +1,8 @@
 import { Checkbox, Form, Input, Select, Switch, Typography } from "antd";
 import type { IFormRenderItem } from "./interface";
 
+import "./FormRender.css";
+
 const { Title, Text } = Typography;
 
 interface FormRenderProps {
@@ -9,7 +11,7 @@ interface FormRenderProps {
 
 const FormRender: React.FC<FormRenderProps> = ({ schema }) => {
     return (
-        <Form layout="vertical">
+        <Form layout="vertical" className="form-wrapper">
             {schema.map((item) => {
                 if (item.type === "title") {
                     return <Title level={item.level}>{item.initValue}</Title>;

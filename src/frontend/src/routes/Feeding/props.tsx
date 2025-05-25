@@ -1,3 +1,4 @@
+import { Button } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 
 import type { DynamicTableColumnType } from "#common/DynamicTable/types";
@@ -31,8 +32,12 @@ export const columns: DynamicTableColumnType<IFeedingTableItem>[] = [
     },
     {
         key: "edit",
-        render: () => <DeleteOutlined />,
-        width: 50,
+        render: () => (
+            <Button type="text">
+                <DeleteOutlined />
+            </Button>
+        ),
+        width: 100,
     },
 ];
 
@@ -62,21 +67,63 @@ export const mockData: IFeedingTableItem[] = [
     },
     {
         id: "R2",
-        pool: "Бассейн 1",
+        pool: "Бассейн 2",
         feed: "Корм №1",
         weight: 500,
         period: "18:00",
     },
     {
         id: "R3",
-        pool: "Бассейн 1",
+        pool: "Бассейн 3",
         feed: "Корм №1",
         weight: 500,
         period: "18:00",
     },
     {
         id: "R4",
-        pool: "Бассейн 1",
+        pool: "Бассейн 4",
+        feed: "Корм №1",
+        weight: 500,
+        period: "18:00",
+    },
+    {
+        id: "R5",
+        pool: "Бассейн 5",
+        feed: "Корм №1",
+        weight: 500,
+        period: "18:00",
+    },
+    {
+        id: "R6",
+        pool: "Бассейн 6",
+        feed: "Корм №1",
+        weight: 500,
+        period: "18:00",
+    },
+    {
+        id: "R7",
+        pool: "Бассейн 7",
+        feed: "Корм №1",
+        weight: 500,
+        period: "18:00",
+    },
+    {
+        id: "R8",
+        pool: "Бассейн 8",
+        feed: "Корм №1",
+        weight: 500,
+        period: "18:00",
+    },
+    {
+        id: "R9",
+        pool: "Бассейн 9",
+        feed: "Корм №1",
+        weight: 500,
+        period: "18:00",
+    },
+    {
+        id: "R10",
+        pool: "Бассейн 10",
         feed: "Корм №1",
         weight: 500,
         period: "18:00",
