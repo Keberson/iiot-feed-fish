@@ -27,6 +27,7 @@ export interface IFormRenderItemTitle {
 
 export interface IFormRenderInput extends IFormRenderItemBase {
     type: "input";
+    subtype?: "number" | "text" | "password";
     initValue?: string;
 }
 
@@ -46,10 +47,15 @@ export interface IFormRenderSwitch extends IFormRenderItemBase {
     initValue?: boolean;
 }
 
+export interface IFormRenderDivider {
+    type: "divider";
+}
+
 export type IFormRenderItem =
     | IFormRenderItemText
     | IFormRenderItemTitle
     | IFormRenderInput
     | IFormRenderSelect
     | IFormRenderCheckbox
-    | IFormRenderSwitch;
+    | IFormRenderSwitch
+    | IFormRenderDivider;

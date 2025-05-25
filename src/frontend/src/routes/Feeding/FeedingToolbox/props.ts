@@ -15,6 +15,7 @@ export const createSchema: IFormRenderItem[] = [
     },
     {
         type: "input",
+        subtype: "number",
         label: "Масса",
         name: "weight",
     },
