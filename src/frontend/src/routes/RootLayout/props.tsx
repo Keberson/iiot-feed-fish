@@ -1,9 +1,9 @@
 import type { ItemType } from "antd/es/menu/interface";
 import {
     ContainerOutlined,
-    FileOutlined,
     HomeOutlined,
     LineChartOutlined,
+    QuestionCircleOutlined,
     ScheduleOutlined,
     SettingOutlined,
 } from "@ant-design/icons";
@@ -38,9 +38,9 @@ export const items = (prefix: string): ItemType[] =>
             icon: <SettingOutlined />,
         },
         {
-            label: "Документация",
+            label: "Помощь",
             url: "docs",
-            icon: <FileOutlined />,
+            icon: <QuestionCircleOutlined />,
         },
     ].map(({ label, icon, url }) => ({
         label: <MenuItem url={`/${prefix}/${url}`} text={label} />,
