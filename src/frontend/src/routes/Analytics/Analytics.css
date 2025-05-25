@@ -1,0 +1,20 @@
+.analytics-layout {
+    position: relative;
+    flex-grow: 1;
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    box-sizing: border-box;
+    gap: 10px;
+}
+
+.analytics-layout .ant-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.analytics-layout .ant-card-body {
+    flex-grow: 1;
+    box-sizing: border-box;
+}

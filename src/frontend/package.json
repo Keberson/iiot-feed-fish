@@ -15,8 +15,10 @@
     "antd": "^5.25.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-rnd": "^10.5.2",
     "react-router": "^7.6.0",
-    "react-router-dom": "^7.6.0"
+    "react-router-dom": "^7.6.0",
+    "recharts": "^2.15.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
