@@ -39,7 +39,7 @@ export const items = (prefix: string): ItemType[] =>
         },
         {
             label: "Помощь",
-            url: "docs",
+            url: "help",
             icon: <QuestionCircleOutlined />,
         },
     ].map(({ label, icon, url }) => ({

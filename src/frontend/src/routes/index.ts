@@ -6,7 +6,7 @@ import Feeding from "./Feeding/Feeding";
 import Logs from "./Logs/Logs";
 import Analytics from "./Analytics/Analytics";
 import Settings from "./Settings/Settings";
-import Docs from "./Docs/Docs";
+import Help from "./Help/Help";
 
 const router = createBrowserRouter([
     {
@@ -34,8 +34,8 @@ const router = createBrowserRouter([
                 Component: Settings,
             },
             {
-                path: "docs",
-                Component: Docs,
+                path: "help",
+                Component: Help,
             },
         ],
     },

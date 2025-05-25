@@ -1,7 +1,7 @@
 import { Collapse, List, Typography, type CollapseProps } from "antd";
-
-import "./Docs.css";
 import { FilePdfOutlined } from "@ant-design/icons";
+
+import "./Help.css";
 
 const { Title, Text, Link } = Typography;
 
@@ -19,11 +19,11 @@ const faq: CollapseProps["items"] = [
     },
 ];
 
-const Docs = () => {
+const Help = () => {
     return (
         <>
-            <Title level={3}>Документация</Title>
-            <Text>Здесь можно найти документы и ответы на интересующие вопросы.</Text>
+            <Title level={3}>Помощь и документация</Title>
+            <Text>Здесь можно найти документацию и ответы на часто задаваемые вопросы.</Text>
             <Title level={5}>Файлы</Title>
             <List
                 itemLayout="horizontal"
@@ -43,4 +43,4 @@ const Docs = () => {
     );
 };
 
-export default Docs;
+export default Help;
