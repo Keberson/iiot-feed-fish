@@ -1,0 +1,10 @@
+.general-layout {
+    gap: 20px;
+    flex-grow: 1;
+    min-height: 0;
+}
+
+.general-feeding {
+    width: 50%;
+    height: 100%;
+}
