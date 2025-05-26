@@ -7,8 +7,14 @@ import Logs from "./Logs/Logs";
 import Analytics from "./Analytics/Analytics";
 import Settings from "./Settings/Settings";
 import Help from "./Help/Help";
+import DashboardRedirect from "./DashboardRedirect/DashboardRedirect";
+import ErrorNotFound from "./ErrorNotFound/ErrorNotFound";
 
 const router = createBrowserRouter([
+    {
+        path: "/",
+        Component: DashboardRedirect,
+    },
     {
         path: "/dashboard",
         Component: RootLayout,
@@ -38,6 +44,10 @@ const router = createBrowserRouter([
                 Component: Help,
             },
         ],
+    },
+    {
+        path: "*",
+        Component: ErrorNotFound,
     },
 ]);
 
