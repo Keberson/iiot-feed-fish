@@ -29,8 +29,10 @@
 
 .content-wrapper {
     padding: 20px 30px;
+    position: relative;
 }
 
 .content {
     flex-grow: 1;
+    min-height: 0;
 }

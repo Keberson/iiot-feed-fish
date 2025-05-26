@@ -5,4 +5,5 @@
 
 .dynamic-table-top-part {
     gap: 20px;
+    flex-grow: 1;
 }
