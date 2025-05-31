@@ -1,0 +1,9 @@
+.dynamic-table-wrapper {
+    flex-grow: 1;
+    justify-content: space-between !important;
+}
+
+.dynamic-table-top-part {
+    gap: 20px;
+    flex-grow: 1;
+}
