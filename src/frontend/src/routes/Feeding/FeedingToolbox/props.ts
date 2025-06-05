@@ -20,8 +20,18 @@ export const createSchema: IFormRenderItem[] = [
         name: "weight",
     },
     {
-        type: "input",
+        type: "select",
         label: "Время",
         name: "period",
+        options: [
+            { value: "one-time", label: "Раз в сутки" },
+            { value: "other", label: "Другое" },
+        ],
+    },
+    {
+        type: "input",
+        label: "Время (другое)",
+        name: "another-period",
+        hidden: true,
     },
 ];

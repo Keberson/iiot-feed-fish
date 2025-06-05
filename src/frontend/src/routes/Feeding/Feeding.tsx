@@ -23,6 +23,7 @@ const Feeding = () => {
             <DynamicTable<IFeedingTableItem>
                 filter={filterSchema}
                 pagination
+                exported
                 topRef={titleRef}
                 columns={columns}
                 data={mockData}

@@ -25,7 +25,7 @@ export const columns: DynamicTableColumnType<IFeedingTableItem>[] = [
         editable: true,
     },
     {
-        title: "Время",
+        title: "Период",
         dataIndex: "period",
         key: "period",
         editable: true,
@@ -43,17 +43,26 @@ export const columns: DynamicTableColumnType<IFeedingTableItem>[] = [
 
 export const filterSchema: IFormRenderItem[] = [
     {
-        type: "input",
-        name: "input",
-        label: "Фильтр №1",
-        initValue: "бла бла бла",
+        type: "select",
+        name: "pool",
+        label: "Бассейн",
+        options: [{ value: "1", label: "Бассейн 1" }],
     },
     {
         type: "select",
-        name: "select",
-        label: "Фильтр №2",
-        options: [{ value: "1", label: "Бассейн 1" }],
-        initValue: "1",
+        name: "feed",
+        label: "Корм",
+        options: [{ value: "1", label: "Кром №1" }],
+    },
+    {
+        type: "slider",
+        name: "weight",
+        label: "Масса",
+        marks: {
+            0: "0 кг",
+            100: "100 кг",
+        },
+        range: true,
     },
 ];
 
