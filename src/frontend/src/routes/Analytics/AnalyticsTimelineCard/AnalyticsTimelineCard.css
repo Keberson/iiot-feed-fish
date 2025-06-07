@@ -1,0 +1,8 @@
+.analytics-card-title-wrapper {
+    align-items: center;
+    justify-content: space-between;
+}
+
+.analytics-card-title {
+    margin: 0 !important;
+}

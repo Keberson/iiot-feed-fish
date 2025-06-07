@@ -1,8 +1,7 @@
 import { Card, Flex, Typography } from "antd";
 
 import ChartRender from "#common/ChartRender/ChartRender/ChartRender";
-
-import AnalyticsCardToolbox from "./AnalyticsCardToolbox/AnalyticsCardToolbox";
+import AnalyticsCardToolbox from "#common/AnalyticsCardToolbox/AnalyticsCardToolbox";
 
 import "./AnalyticsCard.css";
 
@@ -20,52 +19,38 @@ const AnalyticsCard: React.FC<AnalyticsCardProps> = ({ title }) => {
                     <Title className="analytics-card-title" level={5}>
                         {title}
                     </Title>
-                    <AnalyticsCardToolbox />
+                    <AnalyticsCardToolbox perioded={[]} filtered={[]} exported={[]} />
                 </Flex>
             }
         >
             <ChartRender
                 data={[
                     {
-                        name: "Page A",
-                        uv: 4000,
-                        pv: 2400,
+                        name: "Бассейн 1",
+                        delta: 100,
                     },
                     {
-                        name: "Page B",
-                        uv: 3000,
-                        pv: 1398,
+                        name: "Бассейн 2",
+                        delta: 150,
                     },
                     {
-                        name: "Page C",
-                        uv: 2000,
-                        pv: 9800,
+                        name: "Бассейн 3",
+                        delta: 140,
                     },
                     {
-                        name: "Page D",
-                        uv: 2780,
-                        pv: 3908,
+                        name: "Бассейн 4",
+                        delta: 160,
                     },
                     {
-                        name: "Page E",
-                        uv: 1890,
-                        pv: 4800,
+                        name: "Бассейн 5",
+                        delta: 110,
                     },
                     {
-                        name: "Page F",
-                        uv: 2390,
-                        pv: 3800,
-                    },
-                    {
-                        name: "Page G",
-                        uv: 3490,
-                        pv: 4300,
+                        name: "Бассейн 6",
+                        delta: 90,
                     },
                 ]}
-                bars={[
-                    { dataKey: "pv", fill: "#8884d8" },
-                    { dataKey: "uv", fill: "#82ca9d" },
-                ]}
+                bars={[{ dataKey: "delta", fill: "#8884d8" }]}
                 gridDash="3 3"
                 axisX
                 axisXKey="name"

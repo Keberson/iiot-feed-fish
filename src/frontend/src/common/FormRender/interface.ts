@@ -1,3 +1,4 @@
+import type { SliderSingleProps } from "antd";
 import type { Rule } from "antd/es/form";
 import type { DefaultOptionType } from "antd/es/select";
 
@@ -12,6 +13,7 @@ interface IFormRenderItemBase {
     validators?: Rule[];
     initValue?: unknown;
     request?: IFormRenderRequest;
+    hidden?: boolean;
 }
 
 export interface IFormRenderItemText {
@@ -51,6 +53,12 @@ export interface IFormRenderDivider {
     type: "divider";
 }
 
+export interface IFormRenderSlider extends IFormRenderItemBase {
+    type: "slider";
+    marks: SliderSingleProps["marks"];
+    range?: boolean;
+}
+
 export type IFormRenderItem =
     | IFormRenderItemText
     | IFormRenderItemTitle
@@ -58,4 +66,5 @@ export type IFormRenderItem =
     | IFormRenderSelect
     | IFormRenderCheckbox
     | IFormRenderSwitch
-    | IFormRenderDivider;
+    | IFormRenderDivider
+    | IFormRenderSlider;

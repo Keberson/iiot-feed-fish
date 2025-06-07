@@ -1,4 +1,4 @@
-import { Checkbox, Divider, Form, Input, Select, Switch, Typography } from "antd";
+import { Checkbox, Divider, Flex, Form, Input, Select, Slider, Switch, Typography } from "antd";
 import type { IFormRenderItem } from "./interface";
 
 import "./FormRender.css";
@@ -31,11 +31,21 @@ const FormRender: React.FC<FormRenderProps> = ({ schema }) => {
                         name={item.name}
                         rules={item.validators}
                         initialValue={item.initValue}
+                        className={`${item.hidden ? 'form-item-hidden' : ''}`}
                     >
                         {item.type === "input" && <Input type={item.subtype} />}
                         {item.type === "checkbox" && <Checkbox />}
                         {item.type === "switch" && <Switch />}
                         {item.type === "select" && <Select options={item.options} />}
+                        {item.type === "slider" && (
+                            <Flex className="form-slider-wrapper">
+                                <Slider
+                                    range={item.range}
+                                    marks={item.marks}
+                                    className="form-slider"
+                                />
+                            </Flex>
+                        )}
                     </Form.Item>
                 );
             })}
