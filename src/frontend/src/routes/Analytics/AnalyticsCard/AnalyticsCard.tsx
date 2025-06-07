@@ -1,8 +1,7 @@
 import { Card, Flex, Typography } from "antd";
 
 import ChartRender from "#common/ChartRender/ChartRender/ChartRender";
-
-import AnalyticsCardToolbox from "./AnalyticsCardToolbox/AnalyticsCardToolbox";
+import AnalyticsCardToolbox from "#common/AnalyticsCardToolbox/AnalyticsCardToolbox";
 
 import "./AnalyticsCard.css";
 
@@ -20,7 +19,7 @@ const AnalyticsCard: React.FC<AnalyticsCardProps> = ({ title }) => {
                     <Title className="analytics-card-title" level={5}>
                         {title}
                     </Title>
-                    <AnalyticsCardToolbox />
+                    <AnalyticsCardToolbox perioded={[]} filtered={[]} exported={[]} />
                 </Flex>
             }
         >

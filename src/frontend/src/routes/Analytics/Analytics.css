@@ -3,10 +3,11 @@
     flex-grow: 1;
     margin-top: 20px;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 100%;
     box-sizing: border-box;
     gap: 10px;
+    min-height: 0;
 }
 
 .analytics-layout .ant-card {
