@@ -23,6 +23,7 @@ services:
             - $NGINX_PORT:$NGINX_PORT
         volumes:
             - react-build:/usr/share/nginx/html
+            - ./config/nginx.conf:/etc/nginx/nginx.conf
         networks:
             - iot-network
 
