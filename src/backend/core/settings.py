@@ -73,12 +73,14 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# TODO: заменить на то, что приходит в .env
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'feed_fish_db',
+        'NAME': 'feed-fish',
         'USER': 'postgres',
-        'PASSWORD': 'postgres',
+        'PASSWORD': '0000',
         'HOST': 'localhost',
         'PORT': '5432',
     }
