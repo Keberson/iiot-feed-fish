@@ -1,0 +1,112 @@
+[
+  {
+    "pool": "Бассейн 3",
+    "feed": "Корм №1",
+    "weight": 400,
+    "original_period": "4 раза в день",
+    "ideal_scheduled_time": "2025-06-18 08:00:00",
+    "status": "planned",
+    "arrival_time": "2025-06-18 07:00:45",
+    "actual_start_time": "2025-06-18 08:00:00",
+    "finish_time": "2025-06-18 08:02:00"
+  },
+  {
+    "pool": "Бассейн 1",
+    "feed": "Корм №1",
+    "weight": 500,
+    "original_period": "2 раза в день",
+    "ideal_scheduled_time": "2025-06-18 09:00:00",
+    "status": "planned",
+    "arrival_time": "2025-06-18 08:02:35",
+    "actual_start_time": "2025-06-18 09:00:00",
+    "finish_time": "2025-06-18 09:02:00"
+  },
+  {
+    "pool": "Бассейн 2",
+    "feed": "Корм №2",
+    "weight": 300,
+    "original_period": "3 раза в день",
+    "ideal_scheduled_time": "2025-06-18 09:00:00",
+    "status": "planned",
+    "arrival_time": "2025-06-18 09:02:15",
+    "actual_start_time": "2025-06-18 09:02:15",
+    "finish_time": "2025-06-18 09:04:15"
+  },
+  {
+    "pool": "Бассейн 3",
+    "feed": "Корм №1",
+    "weight": 400,
+    "original_period": "4 раза в день",
+    "ideal_scheduled_time": "2025-06-18 12:00:00",
+    "status": "planned",
+    "arrival_time": "2025-06-18 09:04:35",
+    "actual_start_time": "2025-06-18 12:00:00",
+    "finish_time": "2025-06-18 12:02:00"
+  },
+  {
+    "pool": "Бассейн 2",
+    "feed": "Корм №2",
+    "weight": 300,
+    "original_period": "3 раза в день",
+    "ideal_scheduled_time": "2025-06-18 14:00:00",
+    "status": "planned",
+    "arrival_time": "2025-06-18 12:02:20",
+    "actual_start_time": "2025-06-18 14:00:00",
+    "finish_time": "2025-06-18 14:02:00"
+  },
+  {
+    "pool": "Бассейн 3",
+    "feed": "Корм №1",
+    "weight": 400,
+    "original_period": "4 раза в день",
+    "ideal_scheduled_time": "2025-06-18 16:00:00",
+    "status": "planned",
+    "arrival_time": "2025-06-18 14:02:20",
+    "actual_start_time": "2025-06-18 16:00:00",
+    "finish_time": "2025-06-18 16:02:00"
+  },
+  {
+    "pool": "Бассейн 1",
+    "feed": "Корм №1",
+    "weight": 500,
+    "original_period": "2 раза в день",
+    "ideal_scheduled_time": "2025-06-18 18:00:00",
+    "status": "planned",
+    "arrival_time": "2025-06-18 16:02:35",
+    "actual_start_time": "2025-06-18 18:00:00",
+    "finish_time": "2025-06-18 18:02:00"
+  },
+  {
+    "pool": "Бассейн 4",
+    "feed": "Корм №3",
+    "weight": 200,
+    "original_period": "18:00",
+    "ideal_scheduled_time": "2025-06-18 18:00:00",
+    "status": "planned",
+    "arrival_time": "2025-06-18 18:02:50",
+    "actual_start_time": "2025-06-18 18:02:50",
+    "finish_time": "2025-06-18 18:04:50"
+  },
+  {
+    "pool": "Бассейн 2",
+    "feed": "Корм №2",
+    "weight": 300,
+    "original_period": "3 раза в день",
+    "ideal_scheduled_time": "2025-06-18 19:00:00",
+    "status": "planned",
+    "arrival_time": "2025-06-18 18:05:25",
+    "actual_start_time": "2025-06-18 19:00:00",
+    "finish_time": "2025-06-18 19:02:00"
+  },
+  {
+    "pool": "Бассейн 3",
+    "feed": "Корм №1",
+    "weight": 400,
+    "original_period": "4 раза в день",
+    "ideal_scheduled_time": "2025-06-18 20:00:00",
+    "status": "planned",
+    "arrival_time": "2025-06-18 19:02:20",
+    "actual_start_time": "2025-06-18 20:00:00",
+    "finish_time": "2025-06-18 20:02:00"
+  }
+] 
