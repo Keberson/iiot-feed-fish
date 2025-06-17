@@ -1,7 +1,7 @@
 import { Flex, Form, Input, type InputRef } from "antd";
 import { useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
-import EditableContext from "#core/EditableContext/EditableContext";
+import EditableContext from "#core/contexts/EditableContext";
 
 import "./EditableCell.css";
 

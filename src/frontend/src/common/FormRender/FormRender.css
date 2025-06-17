@@ -15,6 +15,6 @@
     width: 99%;
 }
 
-.form-item-hidden {
-    display: none;
+.form-item-timepicker {
+    width: 100%;
 }

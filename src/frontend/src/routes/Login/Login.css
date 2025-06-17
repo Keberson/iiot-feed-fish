@@ -1,0 +1,33 @@
+.auth-wrapper {
+    flex-grow: 1;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to bottom right, #a5cafe, #6fa6ff, #337dfe);
+}
+
+.auth-card-wrapper {
+    width: 30%;
+    position: relative;
+    justify-content: center;
+}
+
+.auth-card {
+    flex-grow: 1;
+    padding-top: 20px;
+}
+
+.auth-card-title {
+    z-index: 999;
+    position: absolute;
+    top: -32px;
+    border: 1px solid #d2d2d2;
+    background: #fff;
+    padding: 10px;
+    border-radius: 50%;
+    width: 48px;
+}
+
+.auth-card-buttons {
+    justify-content: space-around;
+    margin-top: 30px;
+}

@@ -1,21 +1,20 @@
 import React from "react";
 
 interface FishProps {
-    width?: number;
-    height?: number;
-    color?: string;
+    fill?: string;
+    size?: string;
 }
 
-const Fish: React.FC<FishProps> = ({ width = 32, height = 32, color = "#FFFFFF" }) => {
+const Fish: React.FC<FishProps> = ({ fill = "#FFF", size = "32px" }) => {
     return (
-        <svg height={width} width={height} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+        <svg height={size} width={size} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
             <g>
                 <path
-                    style={{ fill: color }}
+                    style={{ fill }}
                     d="M295.767,73.546h0.012c0.008,0,0.02-0.008,0.029-0.008L295.767,73.546z"
                 />
                 <path
-                    style={{ fill: color }}
+                    style={{ fill }}
                     d="M487.901,273.292c2.203-6.475,6.656-19.836,11.174-35.207c3.155-10.734,6.322-22.374,8.744-33.305
 		c2.406-10.989,4.143-21.022,4.18-29.729c-0.02-3.394-0.239-6.623-1.223-10.149c-0.511-1.763-1.232-3.64-2.472-5.585
 		c-1.223-1.928-3.068-3.971-5.56-5.454c-3.488-2.092-7.2-2.743-10.338-2.735c-4.926,0.049-8.995,1.326-13.077,2.965
@@ -53,7 +52,7 @@ const Fish: React.FC<FishProps> = ({ width = 32, height = 32, color = "#FFFFFF" 
 		c1.367,6.532,2.282,12.496,2.624,16.945C482.476,365.965,477.18,362.679,471.479,358.494z"
                 />
                 <path
-                    style={{ fill: color }}
+                    style={{ fill }}
                     d="M98.81,238.925c-10.824,0-19.597,8.773-19.597,19.589c0,10.832,8.773,19.606,19.597,19.606
 		c10.82,0,19.594-8.774,19.594-19.606C118.403,247.698,109.63,238.925,98.81,238.925z"
                 />

@@ -1,5 +1,8 @@
-import { useState } from "react";
-import { Button, Flex, Modal } from "antd";
+import { useContext } from "react";
+import { Button, Flex } from "antd";
+import { useForm } from "antd/es/form/Form";
+
+import ModalContext from "#core/contexts/ModalContext";
 
 import FormRender from "#common/FormRender/FormRender";
 
@@ -9,28 +12,35 @@ import { createSchema } from "./props";
 import "./FeedingToolbox.css";
 
 const FeedingToolbox = () => {
-    const [openModal, setOpenModal] = useState(false);
+    const { open, close } = useContext(ModalContext);
+    const [form] = useForm();
 
     const closeModal = () => {
-        setOpenModal(false);
+        close();
+        form.resetFields();
+    };
+
+    const openModal = () => {
+        open({
+            content: (
+                <Flex className="feeding-create-wrapper">
+                    <FormRender schema={createSchema} form={form} />
+                </Flex>
+            ),
+            props: {
+                onCancel: closeModal,
+                centered: true,
+                title: "Создание задачи кормления",
+                footer: <FeedingModalFooter onCancel={closeModal} form={form} />,
+            },
+        });
     };
 
     return (
         <>
-            <Button type="primary" onClick={() => setOpenModal(true)}>
+            <Button type="primary" onClick={openModal}>
                 Создать задачу
             </Button>
-            <Modal
-                open={openModal}
-                onCancel={closeModal}
-                centered
-                title="Создание задачи кормления"
-                footer={<FeedingModalFooter />}
-            >
-                <Flex className="feeding-create-wrapper">
-                    <FormRender schema={createSchema} />
-                </Flex>
-            </Modal>
         </>
     );
 };
