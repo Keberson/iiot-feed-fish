@@ -46,7 +46,10 @@ export const filterSchema: IFormRenderItem[] = [
         type: "select",
         name: "pool",
         label: "Бассейн",
-        options: [{ value: "1", label: "Бассейн 1" }],
+        options: [
+            { value: "all", label: "Все бассейны" },
+            { value: "1", label: "Бассейн 1" },
+        ],
     },
     {
         type: "select",

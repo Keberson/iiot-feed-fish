@@ -9,11 +9,14 @@ import FeedingToolbox from "./FeedingToolbox/FeedingToolbox";
 import { columns, filterSchema, mockData } from "./props";
 
 import "./Feeding.css";
+import { useForm } from "antd/es/form/Form";
 
 const { Title } = Typography;
 
 const Feeding = () => {
     const titleRef = useRef<HTMLElement>(null);
+    const [filterForm] = useForm();
+    const [exportForm] = useForm();
 
     return (
         <>
@@ -22,8 +25,10 @@ const Feeding = () => {
             </Flex>
             <DynamicTable<IFeedingTableItem>
                 filter={filterSchema}
+                filterForm={filterForm}
                 pagination
-                exported
+                exported={filterSchema}
+                exportForm={exportForm}
                 topRef={titleRef}
                 columns={columns}
                 data={mockData}

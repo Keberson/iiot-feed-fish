@@ -1,6 +1,6 @@
 import { Form } from "antd";
 
-import EditableContext from "#core/EditableContext/EditableContext";
+import EditableContext from "#core/contexts/EditableContext";
 
 import "./EditableRow.css";
 

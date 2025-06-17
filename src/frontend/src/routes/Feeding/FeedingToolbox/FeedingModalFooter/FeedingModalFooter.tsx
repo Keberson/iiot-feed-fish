@@ -1,12 +1,26 @@
-import { Button, Flex } from "antd";
+import type React from "react";
+import { Button, Flex, type FormInstance } from "antd";
 
 import "./FeedingModalFooter.css";
 
-const FeedingModalFooter = () => {
+interface FeedingModalFooterProps {
+    onCancel: () => void;
+    form: FormInstance;
+}
+
+const FeedingModalFooter: React.FC<FeedingModalFooterProps> = ({ onCancel, form }) => {
+    const create = () => {
+        form.validateFields()
+            .then((res) => console.log(res))
+            .catch();
+    };
+
     return (
         <Flex className="feeding-modal-buttons">
-            <Button type="primary">Создать</Button>
-            <Button>Отменить</Button>
+            <Button type="primary" onClick={create}>
+                Создать
+            </Button>
+            <Button onClick={onCancel}>Отменить</Button>
         </Flex>
     );
 };

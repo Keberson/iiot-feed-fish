@@ -1,8 +1,8 @@
 import { useRef, type ReactNode, type RefObject } from "react";
-import { Flex, Pagination, Table } from "antd";
+import { Flex, Pagination, Table, type FormInstance } from "antd";
 
-import useResizable from "#core/useResizable/useResizable";
-import prepareDynamicTableSchema from "#core/prepareDynamicTableSchema/prepareDynamicTableSchema";
+import useResizable from "#core/hooks/useResizable/useResizable";
+import prepareDynamicTableSchema from "#core/functions/prepareDynamicTableSchema/prepareDynamicTableSchema";
 
 import type { IFormRenderItem } from "#common/FormRender/interface";
 
@@ -16,8 +16,10 @@ import "./DynamicTable.css";
 
 interface DynamicTableProps<T> {
     filter?: IFormRenderItem[];
+    filterForm?: FormInstance;
     pagination?: boolean;
-    exported?: boolean;
+    exported?: IFormRenderItem[];
+    exportForm?: FormInstance;
     topRef?: RefObject<HTMLElement | null>;
     bottomRef?: RefObject<HTMLElement | null>;
     stretchFactor?: number;
@@ -29,8 +31,10 @@ interface DynamicTableProps<T> {
 
 const DynamicTable = <T,>({
     filter,
+    filterForm,
     pagination,
     exported,
+    exportForm,
     topRef,
     bottomRef,
     stretchFactor = 0.7,
@@ -58,8 +62,14 @@ const DynamicTable = <T,>({
     return (
         <Flex ref={ref} vertical className="dynamic-table-wrapper">
             <Flex vertical className="dynamic-table-top-part">
-                {filter && (
-                    <DynamicTableToolbox filter={filter} panel={toolbox} exported={exported} />
+                {filter && filterForm && (
+                    <DynamicTableToolbox
+                        filter={filter}
+                        filterForm={filterForm}
+                        panel={toolbox}
+                        exported={exported}
+                        exportForm={exportForm}
+                    />
                 )}
                 <Table
                     components={{ body: { row: EditableRow, cell: EditableCell } }}

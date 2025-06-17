@@ -91,4 +91,26 @@ class User(models.Model):
     fullname = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.fullname 
+        return self.fullname
+
+
+class Period(models.Model):
+    name = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+
+class FeedingTask(models.Model):
+    pool = models.ForeignKey(Pool, on_delete=models.CASCADE)
+    feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
+    weight = models.DecimalField(max_digits=10, decimal_places=2)
+    period = models.ForeignKey(Period, on_delete=models.CASCADE, null=True, blank=True)
+    other_period = models.TimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Feeding {self.pool.name} with {self.feed.name}" 
