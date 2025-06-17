@@ -7,6 +7,15 @@ interface IFormRenderRequest {
     query: object[];
 }
 
+interface IFormRenderDependecy {
+    controlName: string;
+    compareValue: unknown;
+}
+
+interface IFormRenderDependecies {
+    hide?: IFormRenderDependecy;
+}
+
 interface IFormRenderItemBase {
     name: string;
     label: string | React.ReactNode;
@@ -14,6 +23,9 @@ interface IFormRenderItemBase {
     initValue?: unknown;
     request?: IFormRenderRequest;
     hidden?: boolean;
+    dependencies?: IFormRenderDependecies;
+    required?: boolean;
+    disabled?: boolean;
 }
 
 export interface IFormRenderItemText {
@@ -31,12 +43,14 @@ export interface IFormRenderInput extends IFormRenderItemBase {
     type: "input";
     subtype?: "number" | "text" | "password";
     initValue?: string;
+    placeholder?: string;
 }
 
 export interface IFormRenderSelect extends IFormRenderItemBase {
     type: "select";
     options: DefaultOptionType[];
     initValue?: string;
+    placeholder?: string;
 }
 
 export interface IFormRenderCheckbox extends IFormRenderItemBase {
@@ -59,6 +73,12 @@ export interface IFormRenderSlider extends IFormRenderItemBase {
     range?: boolean;
 }
 
+export interface IFormRenderTime extends IFormRenderItemBase {
+    type: "time";
+    initValue?: string;
+    placeholder?: string;
+}
+
 export type IFormRenderItem =
     | IFormRenderItemText
     | IFormRenderItemTitle
@@ -67,4 +87,5 @@ export type IFormRenderItem =
     | IFormRenderCheckbox
     | IFormRenderSwitch
     | IFormRenderDivider
-    | IFormRenderSlider;
+    | IFormRenderSlider
+    | IFormRenderTime;

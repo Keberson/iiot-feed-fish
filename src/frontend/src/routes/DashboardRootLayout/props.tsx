@@ -43,7 +43,7 @@ export const items = (prefix: string): ItemType[] =>
             icon: <QuestionCircleOutlined />,
         },
     ].map(({ label, icon, url }) => ({
-        label: <MenuItem url={`/${prefix}/${url}`} text={label} />,
+        label: <MenuItem url={`/${prefix}/${url}`} text={label} key={url} />,
         key: url,
         icon,
     }));
