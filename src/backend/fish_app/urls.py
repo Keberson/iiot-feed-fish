@@ -9,5 +9,5 @@ urlpatterns = [
     # Feeding endpoints
     path('feeding/form-data', views.get_feeding_form_data, name='feeding_form_data'),
     path('feeding', views.feeding_list_create, name='feeding_list_create'),
-    path('feeding/<int:id>', views.feeding_detail, name='feeding_detail'),
+    path('feeding/<uuid:id>', views.feeding_detail, name='feeding_detail'),
 ] 

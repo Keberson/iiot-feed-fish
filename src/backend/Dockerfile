@@ -13,7 +13,6 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 WORKDIR /app
 
-# Копируем только requirements.txt для лучшего кеширования слоев
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
@@ -24,30 +23,24 @@ ENV PYTHONUNBUFFERED 1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
+    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 RUN useradd -m django_user && \
-    mkdir /app && \
+    mkdir -p /app/migrations && \
     chown django_user:django_user /app
 
 WORKDIR /app
 USER django_user
 
-# Копируем сначала только необходимые файлы для запуска приложения
-COPY --chown=django_user:django_user manage.py .
-COPY --chown=django_user:django_user core/ core/
-# Копируем остальные приложения Django
-COPY --chown=django_user:django_user fish_app/ fish_app/
+COPY --chown=django_user:django_user . .
 
-# RUN python manage.py collectstatic --noinput
+# Создаем пустую папку migrations если ее нет
+RUN mkdir -p fish_app/migrations && \
+    touch fish_app/migrations/__init__.py && \
+    chmod +x /app/entrypoint.sh
 
-EXPOSE 8000
-
-# Для разработки
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
-
-# Для production (рекомендуется)
-# CMD ["gunicorn", "--bind", "0.0.0.0:8000", "core.wsgi:application"]
+CMD ["/app/entrypoint.sh"]

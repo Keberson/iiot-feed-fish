@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.hashers import make_password, check_password
 import uuid
 
 
@@ -87,14 +88,24 @@ class User(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     login = models.CharField(max_length=255, unique=True)
     password = models.CharField(max_length=255)
-    jwt = models.CharField(max_length=255, null=True, blank=True)
+    jwt = models.TextField(null=True, blank=True)
     fullname = models.CharField(max_length=255)
 
     def __str__(self):
         return self.fullname
+    
+    def set_password(self, raw_password):
+        """Хеширует пароль и сохраняет в поле password."""
+        self.password = make_password(raw_password)
+        self.save()
+
+    def check_password(self, raw_password):
+        """Проверяет, совпадает ли raw_password с хешем в БД."""
+        return check_password(raw_password, self.password)
 
 
 class Period(models.Model):
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -104,6 +115,7 @@ class Period(models.Model):
 
 
 class FeedingTask(models.Model):
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     pool = models.ForeignKey(Pool, on_delete=models.CASCADE)
     feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
     weight = models.DecimalField(max_digits=10, decimal_places=2)
