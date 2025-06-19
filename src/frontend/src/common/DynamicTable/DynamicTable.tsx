@@ -1,5 +1,5 @@
 import { useRef, type ReactNode, type RefObject } from "react";
-import { Flex, Pagination, Table, type FormInstance } from "antd";
+import { Empty, Flex, Pagination, Table, type FormInstance } from "antd";
 
 import useResizable from "#core/hooks/useResizable/useResizable";
 import prepareDynamicTableSchema from "#core/functions/prepareDynamicTableSchema/prepareDynamicTableSchema";
@@ -87,6 +87,7 @@ const DynamicTable = <T,>({
                                 (bottomRef?.current?.clientHeight || 0)) *
                             stretchFactor,
                     }}
+                    locale={{ emptyText: <Empty description="Нет данных" /> }}
                 />
             </Flex>
             {pagination && (
