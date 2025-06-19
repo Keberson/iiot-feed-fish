@@ -4,7 +4,6 @@ import type {
     IFeedingCreateEditRequest,
     IFeedingFormDataResponse,
     IFeedingItem,
-    IFeedingTableItem,
 } from "#types/feeding.types";
 
 import type { AuthState } from "#store/auth.slice";
@@ -29,21 +28,9 @@ export const feedingApi = createApi({
             query: (body) => ({ url: ``, method: "POST", body }),
             invalidatesTags: ["FeedingItem"],
         }),
-        getFeedingList: builder.query<IFeedingTableItem[], void>({
+        getFeedingList: builder.query<IFeedingItem[], void>({
             query: () => "",
             providesTags: ["FeedingItem"],
-            transformResponse: (response: IFeedingItem[]) => {
-                return response.map((item) => ({
-                    id: item.uuid,
-                    pool: item.pool.name,
-                    feed: item.feed.name,
-                    weight: item.weight,
-                    period:
-                        item.period !== "other"
-                            ? item.period.name
-                            : item.other_period.split(":").slice(0, 2).join(":"),
-                }));
-            },
         }),
         getFeedingById: builder.query<IFeedingItem, string>({
             query: (id) => `/${id}`,

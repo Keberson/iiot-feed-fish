@@ -27,6 +27,7 @@ interface DynamicTableProps<T> {
     data: T[];
     rowKey: keyof T;
     toolbox?: ReactNode;
+    handleUpdateItem?: (item: T) => void;
 }
 
 const DynamicTable = <T,>({
@@ -42,22 +43,10 @@ const DynamicTable = <T,>({
     data,
     rowKey,
     toolbox,
+    handleUpdateItem,
 }: DynamicTableProps<T>): React.ReactElement => {
     const { ref, height } = useResizable();
     const toolboxRef = useRef<HTMLElement>(null);
-
-    const handleSave = (row: T) => {
-        const newData = [...data];
-        const index = newData.findIndex((item) => row[rowKey] === item[rowKey]);
-        const item = newData[index];
-
-        newData.splice(index, 1, {
-            ...item,
-            ...row,
-        });
-
-        console.log("Save", newData);
-    };
 
     return (
         <Flex ref={ref} vertical className="dynamic-table-wrapper">
@@ -74,7 +63,7 @@ const DynamicTable = <T,>({
                 <Table
                     components={{ body: { row: EditableRow, cell: EditableCell } }}
                     rootClassName="dynamic-table"
-                    columns={prepareDynamicTableSchema(columns, handleSave)}
+                    columns={prepareDynamicTableSchema(columns, handleUpdateItem)}
                     dataSource={data}
                     rowKey={rowKey}
                     pagination={{ position: ["none"] }}

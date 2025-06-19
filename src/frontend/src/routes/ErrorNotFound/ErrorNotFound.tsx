@@ -8,7 +8,6 @@ const { Title, Link } = Typography;
 
 const ErrorNotFound = () => {
     const session = useAppSelector((state) => state.auth.session);
-    console.log(session);
     const url = session ? "/dashboard/home" : "/auth/login";
 
     return (

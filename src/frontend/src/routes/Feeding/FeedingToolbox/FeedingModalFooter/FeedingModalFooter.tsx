@@ -30,7 +30,6 @@ const FeedingModalFooter: React.FC<FeedingModalFooterProps> = ({ onCancel, form 
     const create = () => {
         form.validateFields()
             .then((formValues) => {
-                console.log(formValues.other_period);
                 createFeedingApiWrapper({
                     weight: formValues.weight,
                     pool_id: formValues.pool,

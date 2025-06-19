@@ -1,5 +1,7 @@
-import { Flex, Form, Input, type InputRef } from "antd";
+import { Flex, Form, Input, Select, type GetRef } from "antd";
+import type { DefaultOptionType } from "antd/es/select";
 import { useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { get } from "lodash";
 
 import EditableContext from "#core/contexts/EditableContext";
 
@@ -10,7 +12,10 @@ interface EditableCellProps<T> {
     editable: boolean;
     dataIndex: keyof T;
     record: T;
-    handleSave: (record: T) => void;
+    handleSave: (record: unknown) => void;
+    editType?: "input" | "select";
+    inputType?: "number" | "text";
+    options?: DefaultOptionType[];
 }
 
 const EditableCell = <T,>({
@@ -20,22 +25,29 @@ const EditableCell = <T,>({
     dataIndex,
     record,
     handleSave,
+    editType,
+    inputType,
+    options,
     ...restProps
 }: React.PropsWithChildren<EditableCellProps<T>>): React.ReactElement => {
     const [editing, setEditing] = useState(false);
-    const inputRef = useRef<InputRef>(null);
+    const inputRef = useRef<GetRef<typeof Input>>(null);
+    const selectRef = useRef<GetRef<typeof Select>>(null);
     const form = useContext(EditableContext)!;
 
     useEffect(() => {
         if (editing) {
             inputRef.current?.focus();
+            selectRef.current?.focus();
         }
     }, [editing]);
 
     const toggleEdit = () => {
         setEditing(!editing);
-        console.log(record, dataIndex, record[dataIndex]);
-        form.setFieldsValue({ [dataIndex]: record[dataIndex] });
+
+        const value = get(record, dataIndex.toString());
+
+        form.setFieldsValue({ [dataIndex]: value });
     };
 
     const save = async () => {
@@ -43,7 +55,7 @@ const EditableCell = <T,>({
             const values = await form.validateFields();
 
             toggleEdit();
-            handleSave({ ...record, ...values });
+            handleSave(values);
         } catch (errInfo) {
             console.error("Save failed:", errInfo);
         }
@@ -52,19 +64,25 @@ const EditableCell = <T,>({
     let childNode = children;
 
     if (editable) {
-        childNode = editing ? (
-            <Form.Item
-                className="editable-cell-wrapper"
-                name={dataIndex as string}
-                rules={[{ required: true, message: `${title} обязательно к заполнению.` }]}
-            >
-                <Input ref={inputRef} onPressEnter={save} onBlur={save} />
-            </Form.Item>
-        ) : (
-            <Flex className="editable-cell-value-wrap" onClick={toggleEdit}>
-                {children}
-            </Flex>
-        );
+        childNode =
+            editing && editType ? (
+                <Form.Item
+                    className="editable-cell-wrapper"
+                    name={dataIndex as string}
+                    rules={[{ required: true, message: `${title} обязательно к заполнению.` }]}
+                >
+                    {editType === "input" && (
+                        <Input ref={inputRef} onPressEnter={save} onBlur={save} type={inputType} />
+                    )}
+                    {editType === "select" && (
+                        <Select options={options} ref={selectRef} onBlur={save} onChange={save} />
+                    )}
+                </Form.Item>
+            ) : (
+                <Flex className="editable-cell-value-wrap" onClick={toggleEdit}>
+                    {children}
+                </Flex>
+            );
     }
 
     return <td {...restProps}>{childNode}</td>;

@@ -1,6 +1,12 @@
 import type { DynamicTableColumnType } from "#common/DynamicTable/types";
 
-import type { IFeedingTableItem } from "#types/feeding.types";
+export interface IFeedingTableItem {
+    id: string;
+    pool: string;
+    feed: string;
+    weight: number;
+    period: string;
+}
 
 export const columns: DynamicTableColumnType<IFeedingTableItem>[] = [
     {

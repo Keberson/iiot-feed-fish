@@ -1,36 +1,56 @@
 import { Button } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 
+import type {
+    IFeedingFormDataResponse,
+    IFeedingItem,
+    IFeedingTableItem,
+} from "#types/feeding.types";
+
 import type { DynamicTableColumnType } from "#common/DynamicTable/types";
-import type { IFeedingTableItem } from "#types/feeding.types";
 import type { IFormRenderItem } from "#common/FormRender/interface";
 
 export const columns = (
-    deleteCalback: (id: string) => void
-): DynamicTableColumnType<IFeedingTableItem>[] => [
+    deleteCalback: (id: string) => void,
+    formData?: IFeedingFormDataResponse
+): DynamicTableColumnType<IFeedingItem>[] => [
     {
         title: "Бассейн",
-        dataIndex: "pool",
+        dataIndex: "pool.id",
+        render: (_, record) => record.pool.name,
         key: "pool",
-        editable: true,
+        editable: !!formData,
+        editType: "select",
+        options: formData?.pool.map((item) => ({ value: item.id, label: item.name })) || [],
     },
     {
         title: "Корм",
-        dataIndex: "feed",
+        dataIndex: "feed.id",
+        render: (_, record) => record.feed.name,
         key: "feed",
-        editable: true,
+        editable: !!formData,
+        editType: "select",
+        options: formData?.feed.map((item) => ({ value: item.id, label: item.name })) || [],
     },
     {
         title: "Масса (кг)",
         dataIndex: "weight",
         key: "weight",
         editable: true,
+        editType: "input",
+        inputType: "number",
     },
     {
         title: "Период",
-        dataIndex: "period",
+        dataIndex: "period.id",
+        render: (_, record) =>
+            record.period === "other"
+                ? record.other_period.split(":").slice(0, 2).join(":")
+                : record.period.name,
         key: "period",
-        editable: true,
+        // editable: !!formData,
+        editType: "select",
+        options: formData?.period.map((item) => ({ value: item.id, label: item.name })) || [],
     },
     {
         key: "edit",

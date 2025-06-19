@@ -36,7 +36,16 @@ const General = () => {
                         // pagination
                         topRef={titleRef}
                         columns={columns}
-                        data={data || []}
+                        data={(data || []).map((item) => ({
+                            id: item.uuid,
+                            pool: item.pool.name,
+                            feed: item.feed.name,
+                            weight: item.weight,
+                            period:
+                                item.period !== "other"
+                                    ? item.period.name
+                                    : item.other_period.split(":").slice(0, 2).join(":"),
+                        }))}
                         rowKey="id"
                     />
                 </Flex>
