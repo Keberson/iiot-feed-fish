@@ -36,10 +36,18 @@ interface IFeedingItemOtherPeriod extends IFeedingItemBase {
 
 export type IFeedingItem = IFeedingItemPeriod | IFeedingItemOtherPeriod;
 
-export interface IFeedingCreateEditRequest {
+interface IFeedingCreateEditBase {
     weight: number;
     pool_id: string;
     feed_id: string;
-    period_id: string;
-    other_period?: string;
 }
+
+interface IFeedingCreateEditPeriod extends IFeedingCreateEditBase {
+    period_id: string;
+}
+
+interface IFeedingCreateEditOtherPeriod extends IFeedingCreateEditBase {
+    other_period: string;
+}
+
+export type IFeedingCreateEditRequest = IFeedingCreateEditPeriod | IFeedingCreateEditOtherPeriod;

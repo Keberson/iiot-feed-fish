@@ -1,9 +1,14 @@
 import type { TableProps } from "antd/es/table";
 
-interface IDynamicTableColumntTypeCustom {
-    editable?: boolean;
+interface IDynamicTableColumnTypeCustom {
     dataIndex?: string;
 }
 
+interface IDynamicTableColumnTypeCustomEditable {
+    editable: boolean;
+    
+}
+
 export type DynamicTableColumnType<T> = Exclude<TableProps<T>["columns"], undefined>[number] &
-    IDynamicTableColumntTypeCustom;
+    IDynamicTableColumnTypeCustom &
+    (IDynamicTableColumnTypeCustomEditable | { editable?: never });

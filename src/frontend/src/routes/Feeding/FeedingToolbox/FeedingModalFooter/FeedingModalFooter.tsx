@@ -1,6 +1,7 @@
 import type React from "react";
 import { useContext } from "react";
 import { Button, Flex, type FormInstance } from "antd";
+import type { Dayjs } from "dayjs";
 
 import { useCreateFeedingMutation } from "#services/feeding";
 
@@ -29,12 +30,15 @@ const FeedingModalFooter: React.FC<FeedingModalFooterProps> = ({ onCancel, form 
     const create = () => {
         form.validateFields()
             .then((formValues) => {
+                console.log(formValues.other_period);
                 createFeedingApiWrapper({
                     weight: formValues.weight,
                     pool_id: formValues.pool,
                     feed_id: formValues.feed,
-                    period_id: formValues.period,
-                    other_period: formValues.other_period,
+                    period_id: formValues?.other_period ? undefined : formValues.period,
+                    other_period: formValues?.other_period
+                        ? (formValues?.other_period as Dayjs).format("HH:mm")
+                        : undefined,
                 });
                 messageApi?.success("Успешно создано!");
             })

@@ -38,7 +38,10 @@ export const feedingApi = createApi({
                     pool: item.pool.name,
                     feed: item.feed.name,
                     weight: item.weight,
-                    period: item.period !== "other" ? item.period.name : item.other_period,
+                    period:
+                        item.period !== "other"
+                            ? item.period.name
+                            : item.other_period.split(":").slice(0, 2).join(":"),
                 }));
             },
         }),
