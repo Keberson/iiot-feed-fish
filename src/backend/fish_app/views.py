@@ -1,9 +1,10 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from .models import Pool, Feed, Timetable, Feeding, Log, System, User
 import json
 import jwt
 import datetime
+import csv
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from rest_framework import status
@@ -148,7 +149,7 @@ def feeding_list_create(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET', 'PUT', 'DELETE'])
+@api_view(['GET', 'PUT', 'DELETE', 'PATCH'])
 def feeding_detail(request, id):
     try:
         task = FeedingTask.objects.get(pk=id)
@@ -165,7 +166,77 @@ def feeding_detail(request, id):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    elif request.method == 'PATCH':
+        serializer = FeedingTaskSerializer(task, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
         task.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT) 
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET'])
+def export_feeding_data(request):
+    # Get query parameters for filtering
+    pool_id = request.query_params.get('pool')
+    feed_id = request.query_params.get('feed')
+    min_weight = request.query_params.get('min-weight')
+    max_weight = request.query_params.get('max-weight')
+    
+    # Start with all tasks
+    tasks = FeedingTask.objects.all()
+    
+    # Apply filters if provided
+    if pool_id:
+        tasks = tasks.filter(pool=pool_id)
+    
+    if feed_id:
+        tasks = tasks.filter(feed=feed_id)
+    
+    if min_weight:
+        try:
+            min_weight = float(min_weight)
+            tasks = tasks.filter(weight__gte=min_weight)
+        except ValueError:
+            pass
+    
+    if max_weight:
+        try:
+            max_weight = float(max_weight)
+            tasks = tasks.filter(weight__lte=max_weight)
+        except ValueError:
+            pass
+    
+    # Create CSV response with UTF-8 encoding and BOM
+    response = HttpResponse(content_type='text/csv; charset=utf-8-sig')
+    response['Content-Disposition'] = 'attachment; filename="feeding_data.csv"'
+    
+    # Add BOM (Byte Order Mark) for Excel to recognize UTF-8
+    response.write('\ufeff')
+    
+    writer = csv.writer(response)
+    # Write header
+    writer.writerow(['Бассейн', 'Популяция', 'Время', 'Масса', 'Тип корма'])
+    
+    # Write data rows
+    for task in tasks:
+        # Handle potential None values for period or other_period
+        if task.other_period:
+            time_value = task.other_period.strftime('%H:%M')
+        elif task.period:
+            time_value = task.period.name
+        else:
+            time_value = ''
+            
+        writer.writerow([
+            task.pool.name,
+            '',  # Популяция (пустой столбец)
+            time_value,
+            task.weight,
+            task.feed.name
+        ])
+    
+    return response 
