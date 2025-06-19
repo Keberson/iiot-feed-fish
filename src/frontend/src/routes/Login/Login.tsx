@@ -1,24 +1,35 @@
-import { Button, Card, Flex, Form, Input, Typography } from "antd";
-import {
-    LockOutlined,
-    LoginOutlined,
-    QuestionCircleOutlined,
-    UserOutlined,
-} from "@ant-design/icons";
+import { Button, Card, Flex } from "antd";
+import { LoginOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { useForm } from "antd/es/form/Form";
 import { useContext } from "react";
+
+import { useLoginMutation } from "#services/auth";
+
+import { setSession } from "#store/auth.slice";
 
 import Fish from "#assets/Fish/Fish";
 
 import MessageContext from "#core/contexts/MessageContext";
-import SessionContext from "#core/contexts/SessionContext";
+import useAppDispatch from "#core/hooks/useStore/useAppDispatch";
+import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
+
+import FormRender from "#common/FormRender/FormRender";
+
+import type { ILoginRequest } from "#types/auth.types";
+
+import { schema } from "./props";
 
 import "./Login.css";
 
-const { Text } = Typography;
-
 const Login = () => {
+    const LoginAction = "LOGIN";
+
+    const dispatch = useAppDispatch();
     const { messageApi } = useContext(MessageContext);
-    const { login } = useContext(SessionContext);
+    const [apiLogin, loginOptions] = useLoginMutation();
+    const [form] = useForm();
+
+    useRTKEffects(loginOptions, LoginAction);
 
     const onClickForgetPassword = () => {
         messageApi?.open({
@@ -27,8 +38,20 @@ const Login = () => {
         });
     };
 
+    const apiLoginWrapper = (loginData: ILoginRequest) => {
+        return apiLogin(loginData)
+            .then((res) => {
+                if (res.data) {
+                    dispatch(setSession({ name: res.data.user.fullname, token: res.data?.token }));
+                }
+            })
+            .catch();
+    };
+
     const onClickLogin = () => {
-        login({ name: "", token: "" });
+        form.validateFields()
+            .then((formValues) => apiLoginWrapper(formValues))
+            .catch(() => {});
     };
 
     return (
@@ -38,21 +61,7 @@ const Login = () => {
                     <Fish size="48px" fill="#000" />
                 </Flex>
                 <Card className="auth-card">
-                    <Form layout="vertical">
-                        <Form.Item label={<Text>Имя пользователя</Text>}>
-                            <Input
-                                addonBefore={<UserOutlined />}
-                                placeholder="Введите имя пользователя"
-                            />
-                        </Form.Item>
-                        <Form.Item label={<Text>Пароль</Text>}>
-                            <Input
-                                addonBefore={<LockOutlined />}
-                                type="password"
-                                placeholder="Введите пароль"
-                            />
-                        </Form.Item>
-                    </Form>
+                    <FormRender schema={schema} form={form} />
                     <Flex className="auth-card-buttons">
                         <Button onClick={onClickForgetPassword}>
                             Забыл пароль <QuestionCircleOutlined />

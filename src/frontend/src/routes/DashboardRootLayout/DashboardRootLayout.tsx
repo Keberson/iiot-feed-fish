@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router";
 import { Divider, Flex, Layout, Menu, Typography } from "antd";
 import Sider from "antd/es/layout/Sider";
@@ -8,13 +8,28 @@ import Fish from "#assets/Fish/Fish";
 import { items } from "./props";
 
 import "./DashboardRootLayout.css";
+import { useCheckTokenMutation } from "#services/auth";
+import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
+import useAppSelector from "#core/hooks/useStore/useAppSelector";
+import { setSession } from "#store/auth.slice";
+import useAppDispatch from "#core/hooks/useStore/useAppDispatch";
 
 const { Title } = Typography;
 
 const DashboardRootLayout = () => {
     const PREFIX = "dashboard";
+
+    const dispatch = useAppDispatch();
     const { pathname } = useLocation();
     const [collapsed, setCollapsed] = useState(false);
+    const [checkTokenApi, options] = useCheckTokenMutation();
+    const session = useAppSelector((state) => state.auth.session);
+
+    useRTKEffects(options, "DASHBOARD_CHECK_TOKEN");
+
+    useEffect(() => {
+        checkTokenApi({ token: session?.token || "" }).catch(() => dispatch(setSession(null)));
+    }, [pathname]);
 
     return (
         <Layout className="sidabar-menu">
