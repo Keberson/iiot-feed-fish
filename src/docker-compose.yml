@@ -46,7 +46,6 @@ services:
             - $PG_PORT:5432
         volumes:
             - asni_db_volume:/var/lib/postgresql/data/
-            - ./build-db/init.sql:/docker-entrypoint-initdb.d/init.sql
         networks:
             - iot-network
 

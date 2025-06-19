@@ -11,10 +11,12 @@ import ErrorNotFound from "./ErrorNotFound/ErrorNotFound";
 import Login from "./Login/Login";
 import RootLayout from "./RootLayout/RootLayout";
 
+
+
 const router = createBrowserRouter([
     {
         Component: RootLayout,
-        errorElement: <Navigate to="/404" />,
+        errorElement: <Navigate to="/404" replace />,
         children: [
             {
                 path: "/",

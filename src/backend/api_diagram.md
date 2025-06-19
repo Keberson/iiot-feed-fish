@@ -9,9 +9,9 @@ graph TD;
     C --> F["GET /api/feeding/form-data"]
     C --> G["GET /api/feeding"]
     C --> H["POST /api/feeding"]
-    C --> I["GET /api/feeding/id"]
-    C --> J["PUT /api/feeding/id"]
-    C --> K["DELETE /api/feeding/id"]
+    C --> I["GET /api/feeding/{id}"]
+    C --> J["PUT /api/feeding/{id}"]
+    C --> K["DELETE /api/feeding/{id}"]
     
     style A fill:#f9f,stroke:#333,stroke-width:2px
     style B fill:#bbf,stroke:#333,stroke-width:1px

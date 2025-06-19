@@ -1,17 +1,27 @@
 import { Divider, Flex, Typography } from "antd";
+import { useRef } from "react";
+
+import type { IFeedingTableItem } from "#types/feeding.types";
 
 import DynamicTable from "#common/DynamicTable/DynamicTable";
+import ChartRender from "#common/ChartRender/ChartRender/ChartRender";
+
+import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
+
+import { useGetFeedingListQuery } from "#services/feeding";
+
+import { columns } from "./props";
 
 import "./General.css";
-import type { IFeedingTableItem } from "#types/feeding.types";
-import { columns, mockData } from "#routes/Feeding/props";
-import { useRef } from "react";
-import ChartRender from "#common/ChartRender/ChartRender/ChartRender";
 
 const { Title } = Typography;
 
 const General = () => {
     const titleRef = useRef<HTMLElement>(null);
+
+    const { data, isLoading, error } = useGetFeedingListQuery();
+
+    useRTKEffects({ isLoading, error }, "GET_FEEDING_GENERAL");
 
     return (
         <>
@@ -23,10 +33,10 @@ const General = () => {
                         Запланированное кормление
                     </Title>
                     <DynamicTable<IFeedingTableItem>
-                        pagination
+                        // pagination
                         topRef={titleRef}
-                        columns={columns.filter((col) => col.key !== "edit")}
-                        data={mockData}
+                        columns={columns}
+                        data={data || []}
                         rowKey="id"
                     />
                 </Flex>

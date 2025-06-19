@@ -26,25 +26,25 @@ class FeedingTaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FeedingTask
-        fields = ['id', 'pool', 'pool_id', 'feed', 'feed_id', 'weight', 'period', 'period_id', 'other_period']
+        fields = ['uuid', 'pool', 'pool_id', 'feed', 'feed_id', 'weight', 'period', 'period_id', 'other_period']
         extra_kwargs = {
             'other_period': {'required': False}
         }
 
     def get_pool(self, obj):
-        return {'id': obj.pool.id, 'name': obj.pool.name}
+        return {'id': obj.pool.uuid, 'name': obj.pool.name}
 
     def get_feed(self, obj):
-        return {'id': obj.feed.id, 'name': obj.feed.name}
+        return {'id': obj.feed.uuid, 'name': obj.feed.name}
 
     def get_period(self, obj):
         if obj.period:
-            return {'id': obj.period.id, 'name': obj.period.name}
+            return {'id': obj.period.uuid, 'name': obj.period.name}
         return 'other' if obj.other_period else None
 
     def validate(self, data):
-        if 'period_id' not in data and 'other_period' not in data:
+        if 'period' not in data and 'other_period' not in data:
             raise serializers.ValidationError("Either period_id or other_period must be provided")
-        if 'period_id' in data and 'other_period' in data:
+        if 'period' in data and 'other_period' in data:
             raise serializers.ValidationError("Cannot provide both period_id and other_period")
         return data 

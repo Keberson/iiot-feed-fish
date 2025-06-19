@@ -22,6 +22,42 @@ def index(request):
     """
     return JsonResponse({"status": "ok", "message": "Fish feeding API is running"})
 
+@swagger_auto_schema(
+    method='post',
+    operation_description="User authentication endpoint",
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        required=['login', 'password'],
+        properties={
+            'login': openapi.Schema(type=openapi.TYPE_STRING, description='User login'),
+            'password': openapi.Schema(type=openapi.TYPE_STRING, description='User password'),
+        }
+    ),
+    responses={
+        200: openapi.Response(
+            description="Authentication successful",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'status': openapi.Schema(type=openapi.TYPE_STRING, description='Response status'),
+                    'message': openapi.Schema(type=openapi.TYPE_STRING, description='Response message'),
+                    'token': openapi.Schema(type=openapi.TYPE_STRING, description='JWT token'),
+                    'user': openapi.Schema(
+                        type=openapi.TYPE_OBJECT,
+                        properties={
+                            'uuid': openapi.Schema(type=openapi.TYPE_STRING, description='User UUID'),
+                            'login': openapi.Schema(type=openapi.TYPE_STRING, description='User login'),
+                            'fullname': openapi.Schema(type=openapi.TYPE_STRING, description='User full name'),
+                        }
+                    )
+                }
+            )
+        ),
+        401: "Invalid credentials",
+        400: "Bad request"
+    }
+)
+@api_view(['POST'])
 @csrf_exempt
 def login(request):
     """
@@ -41,12 +77,17 @@ def login(request):
             return JsonResponse({"status": "error", "message": "Login and password are required"}, status=400)
         
         try:
-            user = User.objects.get(login=login, password=password)
+            user = User.objects.get(login=login)
+            
+            if not user.check_password(password):
+                return JsonResponse({"status": "error", "message": "Invalid credentials"}, status=401)
+                
             
             # Create JWT token
             payload = {
                 'uuid': str(user.uuid),
                 'login': user.login,
+                'fullname': user.fullname,
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)
             }
             
@@ -75,6 +116,40 @@ def login(request):
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
+@swagger_auto_schema(
+    method='post',
+    operation_description="Token validation endpoint",
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        required=['token'],
+        properties={
+            'token': openapi.Schema(type=openapi.TYPE_STRING, description='JWT token to validate'),
+        }
+    ),
+    responses={
+        200: openapi.Response(
+            description="Token is valid",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'status': openapi.Schema(type=openapi.TYPE_STRING, description='Response status'),
+                    'message': openapi.Schema(type=openapi.TYPE_STRING, description='Response message'),
+                    'user': openapi.Schema(
+                        type=openapi.TYPE_OBJECT,
+                        properties={
+                            'uuid': openapi.Schema(type=openapi.TYPE_STRING, description='User UUID'),
+                            'login': openapi.Schema(type=openapi.TYPE_STRING, description='User login'),
+                            'fullname': openapi.Schema(type=openapi.TYPE_STRING, description='User full name'),
+                        }
+                    )
+                }
+            )
+        ),
+        401: "Invalid token",
+        400: "Bad request"
+    }
+)
+@api_view(['POST'])
 @csrf_exempt
 def validate_token(request):
     """
@@ -145,9 +220,9 @@ def get_feeding_form_data(request):
     )
 
     return Response({
-        'pool': [{'id': pool.id, 'name': pool.name} for pool in pools],
-        'feed': [{'id': feed.id, 'name': feed.name} for feed in feeds],
-        'period': [{'id': period.id, 'name': period.name} for period in periods],
+        'pool': [{'id': pool.uuid, 'name': pool.name} for pool in pools],
+        'feed': [{'id': feed.uuid, 'name': feed.name} for feed in feeds],
+        'period': [{'id': period.uuid, 'name': period.name} for period in periods],
         'weight': {
             'min': float(weight_range['min_weight'] or 0),
             'max': float(weight_range['max_weight'] or 0)
@@ -211,7 +286,7 @@ def feeding_detail(request, id):
     DELETE: Deletes a specific feeding task
     """
     try:
-        task = FeedingTask.objects.get(id=id)
+        task = FeedingTask.objects.get(pk=id)
     except FeedingTask.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 

@@ -28,24 +28,29 @@ const FormRender: React.FC<FormRenderProps> = ({ schema, form }) => {
         <Form form={form} layout="vertical" className="form-wrapper">
             {schema.map((item) => {
                 if (item.type === "title") {
-                    return <Title level={item.level}>{item.initValue}</Title>;
+                    return (
+                        <Title level={item.level} key={item.name}>
+                            {item.initValue}
+                        </Title>
+                    );
                 }
 
                 if (item.type === "text") {
-                    return <Text>{item.initValue}</Text>;
+                    return <Text key={item.name}>{item.initValue}</Text>;
                 }
 
                 if (item.type === "divider") {
-                    return <Divider />;
+                    return <Divider key={item.name} />;
                 }
 
                 return (
-                    <FormControlWrapper form={form} item={item}>
+                    <FormControlWrapper form={form} item={item} key={item.name}>
                         {item.type === "input" && (
                             <Input
                                 type={item.subtype}
                                 disabled={item.disabled}
                                 placeholder={item.placeholder}
+                                addonBefore={item.addonBefore}
                             />
                         )}
                         {item.type === "checkbox" && <Checkbox disabled={item.disabled} />}

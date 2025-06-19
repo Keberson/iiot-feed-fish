@@ -49,6 +49,20 @@ The API includes the following endpoints:
 - `PUT /api/feeding/{id}` - Update a specific feeding task
 - `DELETE /api/feeding/{id}` - Delete a specific feeding task
 
+## Data Models
+
+The API uses the following main data models:
+
+- **Pool** - Represents a fish pool
+- **Feed** - Represents a type of fish feed
+- **Period** - Represents a feeding period
+- **FeedingTask** - Represents a scheduled feeding task
+- **User** - Represents a system user
+- **System** - Represents system configuration
+- **Log** - Represents system logs
+- **Timetable** - Represents feeding timetables
+- **Feeding** - Represents a feeding event
+
 ## API Structure Diagram
 
 See [API Structure Diagram](./api_diagram.md) for a visual representation of the API endpoints.
@@ -64,6 +78,14 @@ See [Data Models Diagram](./models_diagram.md) for a visual representation of th
 3. Try out the API by clicking on an endpoint and then clicking the "Try it out" button
 4. Fill in the required parameters and click "Execute"
 5. View the response
+
+## Authentication
+
+The API uses JWT (JSON Web Token) authentication. To authenticate:
+
+1. Use the `/api/auth/login` endpoint with valid credentials
+2. Include the received token in the Authorization header as `Bearer <token>`
+3. You can validate tokens using the `/api/auth/token` endpoint
 
 ## Using with Docker
 
