@@ -5,6 +5,7 @@ import re
 class JWTAuthMiddleware:
     EXCLUDED_PATHS = [
         re.compile(r'^/api/auth/login/?$'),
+        re.compile(r'^/api/auth/token/?$'),
     ]
 
     def __init__(self, get_response):
