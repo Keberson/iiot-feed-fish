@@ -5,7 +5,9 @@ import type { DynamicTableColumnType } from "#common/DynamicTable/types";
 import type { IFeedingTableItem } from "#types/feeding.types";
 import type { IFormRenderItem } from "#common/FormRender/interface";
 
-export const columns: DynamicTableColumnType<IFeedingTableItem>[] = [
+export const columns = (
+    deleteCalback: (id: string) => void
+): DynamicTableColumnType<IFeedingTableItem>[] => [
     {
         title: "Бассейн",
         dataIndex: "pool",
@@ -19,7 +21,7 @@ export const columns: DynamicTableColumnType<IFeedingTableItem>[] = [
         editable: true,
     },
     {
-        title: "Масса (г)",
+        title: "Масса (кг)",
         dataIndex: "weight",
         key: "weight",
         editable: true,
@@ -32,11 +34,13 @@ export const columns: DynamicTableColumnType<IFeedingTableItem>[] = [
     },
     {
         key: "edit",
-        render: () => (
-            <Button type="text">
-                <DeleteOutlined />
-            </Button>
-        ),
+        render: ({ id }: IFeedingTableItem) => {
+            return (
+                <Button type="text" onClick={() => deleteCalback(id)}>
+                    <DeleteOutlined />
+                </Button>
+            );
+        },
         width: 100,
     },
 ];

@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { Flex, Typography } from "antd";
 import { useForm } from "antd/es/form/Form";
 
-import { useGetFeedingListQuery } from "#services/feeding";
+import { useDeleteFeedingByIdMutation, useGetFeedingListQuery } from "#services/feeding";
 
 import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
 
@@ -22,8 +22,10 @@ const Feeding = () => {
     const [filterForm] = useForm();
     const [exportForm] = useForm();
     const { data, isLoading, error } = useGetFeedingListQuery();
+    const [deleteFeeding, optionsDelete] = useDeleteFeedingByIdMutation();
 
     useRTKEffects({ isLoading, error }, "GET_FEEDING");
+    useRTKEffects(optionsDelete, "DELETE_FEEDING");
 
     return (
         <>
@@ -37,7 +39,7 @@ const Feeding = () => {
                 exported={filterSchema}
                 exportForm={exportForm}
                 topRef={titleRef}
-                columns={columns}
+                columns={columns(deleteFeeding)}
                 data={data || []}
                 rowKey="id"
                 toolbox={<FeedingToolbox />}

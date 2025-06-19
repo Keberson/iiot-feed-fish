@@ -10,7 +10,7 @@ import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
 
 import { useGetFeedingListQuery } from "#services/feeding";
 
-import { columns } from "#routes/Feeding/props";
+import { columns } from "./props";
 
 import "./General.css";
 
@@ -35,9 +35,7 @@ const General = () => {
                     <DynamicTable<IFeedingTableItem>
                         // pagination
                         topRef={titleRef}
-                        columns={columns.flatMap((col) =>
-                            col.key !== "edit" ? { ...col, editable: false } : []
-                        )}
+                        columns={columns}
                         data={data || []}
                         rowKey="id"
                     />

@@ -4,35 +4,46 @@ import { useNavigation } from "react-router-dom";
 
 import LoadingContext from "#core/contexts/LoadingContext";
 
+import "./LoadingWrapper.css";
+
 interface LoadingWrapperProps {
     children: ReactNode;
 }
 
 const LoadingWrapper: React.FC<LoadingWrapperProps> = ({ children }) => {
-    const [loading, setLoading] = useState<Record<string, boolean>>({});
+    const [loading, setLoading] = useState<boolean>(false);
+    const [loadingMap, setLoadingMap] = useState<Record<string, boolean>>({});
     const navigation = useNavigation();
 
     useEffect(() => {
         if (navigation.state === "loading") {
-            setLoading((loadings) => ({ ...loadings, PageLoading: true }));
+            setLoadingMap((loadings) => ({ ...loadings, PageLoading: true }));
         }
     }, [navigation]);
 
     const start = (action: string) => {
-        setLoading((prevState) => ({ ...prevState, [action]: true }));
+        setLoadingMap((prevState) => ({ ...prevState, [action]: true }));
     };
 
     const stop = (action: string) => {
-        setLoading((prev) => {
+        setLoadingMap((prev) => {
             const newState = { ...prev };
             delete newState[action];
             return newState;
         });
     };
 
+    useEffect(() => {
+        if (Object.keys(loadingMap).length > 0) {
+            setLoading(true);
+        } else {
+            setTimeout(() => setLoading(false), 250);
+        }
+    }, [loadingMap]);
+
     return (
         <LoadingContext.Provider value={{ start, stop }}>
-            <Spin fullscreen spinning={Object.keys(loading).length > 0} />
+            <Spin fullscreen spinning={loading} rootClassName="spinner" />
             {children}
         </LoadingContext.Provider>
     );
