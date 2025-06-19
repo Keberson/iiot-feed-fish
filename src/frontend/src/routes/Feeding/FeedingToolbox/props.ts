@@ -1,11 +1,13 @@
 import type { IFormRenderItem } from "#common/FormRender/interface";
 
-export const createSchema: IFormRenderItem[] = [
+import type { IFeedingFormDataResponse } from "#types/feeding.types";
+
+export const createSchema = (formData: IFeedingFormDataResponse): IFormRenderItem[] => [
     {
         type: "select",
         label: "Бассейн",
         name: "pool",
-        options: [{ value: "1", label: "Бассейн 1" }],
+        options: formData.pool.map((item) => ({ value: item.id, label: item.name })),
         placeholder: "Выберите бассейн",
         required: true,
         validators: [{ required: true, message: "Пожалуйста, выберите бассейн" }],
@@ -14,7 +16,7 @@ export const createSchema: IFormRenderItem[] = [
         type: "select",
         label: "Корм",
         name: "feed",
-        options: [{ value: "1", label: "Корм №1" }],
+        options: formData.feed.map((item) => ({ value: item.id, label: item.name })),
         placeholder: "Выберите корм",
         required: true,
         validators: [{ required: true, message: "Пожалуйста, выберите корм" }],
@@ -33,7 +35,7 @@ export const createSchema: IFormRenderItem[] = [
         label: "Время",
         name: "period",
         options: [
-            { value: "one-time", label: "Раз в сутки" },
+            ...formData.period.map((item) => ({ value: item.id, label: item.name })),
             { value: "other", label: "Другое" },
         ],
         placeholder: "Выберите периодичность",
@@ -43,7 +45,7 @@ export const createSchema: IFormRenderItem[] = [
     {
         type: "time",
         label: "Время (другое)",
-        name: "another-period",
+        name: "other_period",
         dependencies: {
             hide: {
                 controlName: "period",

@@ -1,8 +1,8 @@
 import { createContext } from "react";
 
 export interface ILoadingContext {
-    start: () => void;
-    stop: () => void;
+    start: (action: string) => void;
+    stop: (action: string) => void;
 }
 
 const defaultValues: ILoadingContext = {

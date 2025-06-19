@@ -31,12 +31,17 @@ def login(request):
             return JsonResponse({"status": "error", "message": "Login and password are required"}, status=400)
         
         try:
-            user = User.objects.get(login=login, password=password)
+            user = User.objects.get(login=login)
+            
+            if not user.check_password(password):
+                return JsonResponse({"status": "error", "message": "Invalid credentials"}, status=401)
+                
             
             # Create JWT token
             payload = {
                 'uuid': str(user.uuid),
                 'login': user.login,
+                'fullname': user.fullname,
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)
             }
             
@@ -120,9 +125,9 @@ def get_feeding_form_data(request):
     )
 
     return Response({
-        'pool': [{'id': pool.id, 'name': pool.name} for pool in pools],
-        'feed': [{'id': feed.id, 'name': feed.name} for feed in feeds],
-        'period': [{'id': period.id, 'name': period.name} for period in periods],
+        'pool': [{'id': pool.uuid, 'name': pool.name} for pool in pools],
+        'feed': [{'id': feed.uuid, 'name': feed.name} for feed in feeds],
+        'period': [{'id': period.uuid, 'name': period.name} for period in periods],
         'weight': {
             'min': float(weight_range['min_weight'] or 0),
             'max': float(weight_range['max_weight'] or 0)
@@ -146,7 +151,7 @@ def feeding_list_create(request):
 @api_view(['GET', 'PUT', 'DELETE'])
 def feeding_detail(request, id):
     try:
-        task = FeedingTask.objects.get(id=id)
+        task = FeedingTask.objects.get(pk=id)
     except FeedingTask.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 

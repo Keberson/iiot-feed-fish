@@ -1,15 +1,21 @@
 import { Flex, Typography } from "antd";
 
+import useAppSelector from "#core/hooks/useStore/useAppSelector";
+
 import "./ErrorNotFound.css";
 
 const { Title, Link } = Typography;
 
 const ErrorNotFound = () => {
+    const session = useAppSelector((state) => state.auth.session);
+    console.log(session);
+    const url = session ? "/dashboard/home" : "/auth/login";
+
     return (
         <Flex className="not-found-wrapper">
             <Title level={1}>404</Title>
             <Title level={3}>Страница не найдена</Title>
-            <Link href="/dashboard/home">Перейти на главную страницу</Link>
+            <Link href={url}>Перейти на главную страницу</Link>
         </Flex>
     );
 };
