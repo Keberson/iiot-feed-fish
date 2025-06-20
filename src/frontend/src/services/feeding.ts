@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import type {
     IFeedingCreateEditRequest,
+    IFeedingFilter,
     IFeedingFormDataResponse,
     IFeedingItem,
     IFeedingList,
@@ -30,11 +31,42 @@ export const feedingApi = createApi({
             query: (body) => ({ url: ``, method: "POST", body }),
             invalidatesTags: [{ type: "FeedingItem", id: "PARTIAL-LIST" }],
         }),
-        getFeedingList: builder.query<IFeedingList, IOptionalPaginationRequest>({
-            query: (pagination) =>
-                pagination
-                    ? `?current=${pagination.current}&itemsPerPage=${pagination.itemsPerPage}`
-                    : "",
+        getFeedingList: builder.query<
+            IFeedingList,
+            { pagination?: IOptionalPaginationRequest; filter?: IFeedingFilter } | undefined
+        >({
+            query: (params) => {
+                if (!params) {
+                    return "";
+                }
+
+                const searchParams = new URLSearchParams();
+                const pagination = params.pagination;
+                const filter = params.filter;
+
+                if (pagination) {
+                    searchParams.set("current", String(pagination.current));
+                    searchParams.set("itemsPerPage", String(pagination.itemsPerPage));
+                }
+
+                if (filter && filter.feed) {
+                    searchParams.set("feed", filter.feed);
+                }
+
+                if (filter && filter.pool) {
+                    searchParams.set("pool", filter.pool);
+                }
+
+                if (filter && filter.minWeight) {
+                    searchParams.set("min-weight", filter.minWeight.toString());
+                }
+
+                if (filter && filter.maxWeight) {
+                    searchParams.set("max-weight", filter.maxWeight.toString());
+                }
+
+                return `?${searchParams.toString()}`;
+            },
             providesTags: (result) => [
                 ...(result?.data || []).map(({ uuid }) => ({
                     type: "FeedingItem" as const,

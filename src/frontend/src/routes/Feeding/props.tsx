@@ -65,30 +65,32 @@ export const columns = (
     },
 ];
 
-export const filterSchema: IFormRenderItem[] = [
+export const filterSchema = (formData?: IFeedingFormDataResponse): IFormRenderItem[] => [
     {
         type: "select",
         name: "pool",
         label: "Бассейн",
-        options: [
-            { value: "all", label: "Все бассейны" },
-            { value: "1", label: "Бассейн 1" },
-        ],
+        options: formData?.pool.map((item) => ({ value: item.id, label: item.name })) || [],
+        allowClear: true,
     },
     {
         type: "select",
         name: "feed",
         label: "Корм",
-        options: [{ value: "1", label: "Кром №1" }],
+        options: formData?.feed.map((item) => ({ value: item.id, label: item.name })) || [],
+        allowClear: true,
     },
     {
         type: "slider",
         name: "weight",
         label: "Масса",
         marks: {
-            0: "0 кг",
-            100: "100 кг",
+            [formData?.weight.min || 0]: `${formData?.weight.min || 0} кг`,
+            [formData?.weight.max || 100]: `${formData?.weight.max || 100} кг`,
         },
+        min: formData?.weight.min || 0,
+        max: formData?.weight.max || 100,
         range: true,
+        disabled: !formData?.weight,
     },
 ];

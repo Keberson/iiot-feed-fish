@@ -1,3 +1,8 @@
 .form-item-hidden {
     display: none;
 }
+
+.form-slider-wrapper {
+    padding: 0 10px;
+    width: 95%;
+}

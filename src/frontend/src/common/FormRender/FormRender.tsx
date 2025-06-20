@@ -1,7 +1,6 @@
 import {
     Checkbox,
     Divider,
-    Flex,
     Form,
     Input,
     Select,
@@ -13,8 +12,9 @@ import {
 } from "antd";
 import type { IFormRenderItem } from "./interface";
 
-import "./FormRender.css";
 import FormControlWrapper from "./FormControlWrapper/FormControlWrapper";
+
+import "./FormRender.css";
 
 const { Title, Text } = Typography;
 
@@ -60,17 +60,32 @@ const FormRender: React.FC<FormRenderProps> = ({ schema, form }) => {
                                 options={item.options}
                                 disabled={item.disabled}
                                 placeholder={item.placeholder}
+                                allowClear={item.allowClear}
                             />
                         )}
                         {item.type === "slider" && (
-                            <Flex className="form-slider-wrapper">
-                                <Slider
-                                    disabled={item.disabled}
-                                    range={item.range}
-                                    marks={item.marks}
-                                    className="form-slider"
-                                />
-                            </Flex>
+                            <>
+                                {item.range && (
+                                    <Slider
+                                        disabled={item.disabled}
+                                        range={item.range}
+                                        marks={item.marks}
+                                        min={item.min}
+                                        max={item.max}
+                                        defaultValue={[item.min, item.max]}
+                                    />
+                                )}
+                                {!item.range && (
+                                    <Slider
+                                        disabled={item.disabled}
+                                        range={item.range}
+                                        marks={item.marks}
+                                        min={item.min}
+                                        max={item.max}
+                                        defaultValue={item.min}
+                                    />
+                                )}
+                            </>
                         )}
                         {item.type === "time" && (
                             <TimePicker

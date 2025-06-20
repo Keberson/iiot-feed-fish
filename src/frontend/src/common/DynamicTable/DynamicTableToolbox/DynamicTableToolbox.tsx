@@ -12,7 +12,26 @@ import "./DynamicTableToolbox.css";
 interface ToolboxProps {
     ref?: React.Ref<HTMLElement>;
     filter?: IFormRenderItem[];
-    filterForm?: FormInstance;
+    filterState?: [
+        (
+            | {
+                  pool: string;
+                  feed: string;
+                  weight: [number, number];
+              }
+            | undefined
+        ),
+        React.Dispatch<
+            React.SetStateAction<
+                | {
+                      pool: string;
+                      feed: string;
+                      weight: [number, number];
+                  }
+                | undefined
+            >
+        >
+    ];
     searchable?: boolean;
     exported?: IFormRenderItem[];
     exportForm?: FormInstance;
@@ -22,7 +41,7 @@ interface ToolboxProps {
 const DynamicTableToolbox: React.FC<ToolboxProps> = ({
     ref,
     filter,
-    filterForm,
+    filterState,
     searchable,
     exported,
     exportForm,
@@ -32,7 +51,7 @@ const DynamicTableToolbox: React.FC<ToolboxProps> = ({
         <Flex ref={ref} className="dynamic-table-toolbox-panel">
             {panel && panel}
             <Flex className="dynamic-table-toolbox">
-                {filter && filterForm && <DynamicTableFilter schema={filter} form={filterForm} />}
+                {filter && filterState && <DynamicTableFilter schema={filter} filterState={filterState} />}
                 {searchable && <DynamicTableSearch />}
                 {exported && exportForm && (
                     <DynamicTableExport schema={exported} form={exportForm} />

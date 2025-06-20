@@ -56,6 +56,7 @@ export interface IFormRenderSelect extends IFormRenderItemBase, IFormRenderBase 
     options: DefaultOptionType[];
     initValue?: string;
     placeholder?: string;
+    allowClear?: boolean;
 }
 
 export interface IFormRenderCheckbox extends IFormRenderItemBase, IFormRenderBase {
@@ -76,6 +77,8 @@ export interface IFormRenderSlider extends IFormRenderItemBase, IFormRenderBase 
     type: "slider";
     marks: SliderSingleProps["marks"];
     range?: boolean;
+    min: number;
+    max: number;
 }
 
 export interface IFormRenderTime extends IFormRenderItemBase, IFormRenderBase {

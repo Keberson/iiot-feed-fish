@@ -1,5 +1,8 @@
-import { Button, Drawer, type FormInstance } from "antd";
+import { Button, Drawer } from "antd";
+import { useForm } from "antd/es/form/Form";
 import { useContext } from "react";
+
+import SidenavContext from "#core/contexts/SidenavContext";
 
 import FormRender from "#common/FormRender/FormRender";
 import type { IFormRenderItem } from "#common/FormRender/interface";
@@ -7,15 +10,34 @@ import type { IFormRenderItem } from "#common/FormRender/interface";
 import DynamicTableFilterFooter from "./DynamicTableFilterFooter/DynamicTableFilterFooter";
 
 import "./DynamicTableFilter.css";
-import SidenavContext from "#core/contexts/SidenavContext";
 
 interface DynamicTableFilterProps {
     schema: IFormRenderItem[];
-    form: FormInstance;
+    filterState: [
+        (
+            | {
+                  pool: string;
+                  feed: string;
+                  weight: [number, number];
+              }
+            | undefined
+        ),
+        React.Dispatch<
+            React.SetStateAction<
+                | {
+                      pool: string;
+                      feed: string;
+                      weight: [number, number];
+                  }
+                | undefined
+            >
+        >
+    ];
 }
 
-const DynamicTableFilter: React.FC<DynamicTableFilterProps> = ({ schema, form }) => {
+const DynamicTableFilter: React.FC<DynamicTableFilterProps> = ({ schema, filterState }) => {
     const { open, close } = useContext(SidenavContext);
+    const [form] = useForm();
 
     const openFilter = () => {
         open({
@@ -23,7 +45,7 @@ const DynamicTableFilter: React.FC<DynamicTableFilterProps> = ({ schema, form })
             props: {
                 title: "Фильтрация",
                 onClose: () => close(),
-                footer: <DynamicTableFilterFooter />,
+                footer: <DynamicTableFilterFooter form={form} filterState={filterState} />,
             },
         });
     };

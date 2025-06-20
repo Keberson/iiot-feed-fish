@@ -21,8 +21,10 @@ const General = () => {
     const paginationState = useState<[number, number]>([1, 10]);
 
     const { data, isLoading, error } = useGetFeedingListQuery({
-        current: paginationState[0][0],
-        itemsPerPage: paginationState[0][1],
+        pagination: {
+            current: paginationState[0][0],
+            itemsPerPage: paginationState[0][1],
+        },
     });
 
     useRTKEffects({ isLoading, error }, "GET_FEEDING_GENERAL");

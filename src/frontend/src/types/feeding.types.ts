@@ -55,3 +55,10 @@ export type IFeedingCreateEditRequest = IFeedingCreateEditPeriod | IFeedingCreat
 export interface IFeedingList extends IPaginationResponse {
     data: IFeedingItem[];
 }
+
+export interface IFeedingFilter {
+    pool?: string;
+    feed?: string;
+    minWeight?: number;
+    maxWeight?: number;
+}

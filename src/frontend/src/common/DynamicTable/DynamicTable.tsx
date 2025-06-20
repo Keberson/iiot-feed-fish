@@ -17,7 +17,26 @@ import type { DynamicTableColumnType } from "./types";
 import "./DynamicTable.css";
 interface DynamicTableProps<T> {
     filter?: IFormRenderItem[];
-    filterForm?: FormInstance;
+    filterState?: [
+        (
+            | {
+                  pool: string;
+                  feed: string;
+                  weight: [number, number];
+              }
+            | undefined
+        ),
+        React.Dispatch<
+            React.SetStateAction<
+                | {
+                      pool: string;
+                      feed: string;
+                      weight: [number, number];
+                  }
+                | undefined
+            >
+        >
+    ];
 
     pagination?: IPaginationResponse;
     paginationState?: [[number, number], React.Dispatch<React.SetStateAction<[number, number]>>];
@@ -38,7 +57,7 @@ interface DynamicTableProps<T> {
 
 const DynamicTable = <T,>({
     filter,
-    filterForm,
+    filterState,
 
     pagination,
     paginationState,
@@ -48,7 +67,7 @@ const DynamicTable = <T,>({
 
     topRef,
     bottomRef,
-    stretchFactor = 0.9,
+    stretchFactor = 0.75,
 
     columns,
     data,
@@ -62,10 +81,10 @@ const DynamicTable = <T,>({
     return (
         <Flex ref={ref} vertical className="dynamic-table-wrapper">
             <Flex vertical className="dynamic-table-top-part">
-                {filter && filterForm && (
+                {filter && filterState && (
                     <DynamicTableToolbox
                         filter={filter}
-                        filterForm={filterForm}
+                        filterState={filterState}
                         panel={toolbox}
                         exported={exported}
                         exportForm={exportForm}

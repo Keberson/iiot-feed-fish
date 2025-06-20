@@ -23,16 +23,28 @@ const { Title } = Typography;
 
 const Feeding = () => {
     const paginationState = useState<[number, number]>([1, 10]);
+    const filterState = useState<{
+        pool: string;
+        feed: string;
+        weight: [number, number];
+    }>();
     const titleRef = useRef<HTMLElement>(null);
-    const [filterForm] = useForm();
     const [exportForm] = useForm();
     const {
         data: feedingList,
         isLoading: isLoadingList,
         error: errorList,
     } = useGetFeedingListQuery({
-        current: paginationState[0][0],
-        itemsPerPage: paginationState[0][1],
+        pagination: {
+            current: paginationState[0][0],
+            itemsPerPage: paginationState[0][1],
+        },
+        filter: {
+            pool: filterState[0]?.pool,
+            feed: filterState[0]?.feed,
+            minWeight: filterState[0]?.weight ? filterState[0]?.weight[0] : undefined,
+            maxWeight: filterState[0]?.weight ? filterState[0]?.weight[1] : undefined,
+        },
     });
 
     const [deleteFeeding, optionsDelete] = useDeleteFeedingByIdMutation();
@@ -56,11 +68,11 @@ const Feeding = () => {
                 <Title level={3}>Управление кормлением</Title>
             </Flex>
             <DynamicTable<IFeedingItem>
-                filter={filterSchema}
-                filterForm={filterForm}
+                filter={filterSchema(formData)}
+                filterState={filterState}
                 pagination={feedingList}
                 paginationState={paginationState}
-                exported={filterSchema}
+                exported={filterSchema(formData)}
                 exportForm={exportForm}
                 topRef={titleRef}
                 columns={columns(deleteFeeding, formData)}
