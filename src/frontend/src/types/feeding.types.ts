@@ -1,4 +1,4 @@
-import type { IBaseItemResponse } from "./api.types";
+import type { IBaseItemResponse, IPaginationResponse } from "./api.types";
 
 export interface IFeedingTableItem {
     id: string;
@@ -51,3 +51,7 @@ interface IFeedingCreateEditOtherPeriod extends IFeedingCreateEditBase {
 }
 
 export type IFeedingCreateEditRequest = IFeedingCreateEditPeriod | IFeedingCreateEditOtherPeriod;
+
+export interface IFeedingList extends IPaginationResponse {
+    data: IFeedingItem[];
+}

@@ -6,6 +6,8 @@ import prepareDynamicTableSchema from "#core/functions/prepareDynamicTableSchema
 
 import type { IFormRenderItem } from "#common/FormRender/interface";
 
+import type { IPaginationResponse } from "#types/api.types";
+
 import EditableRow from "./EditableRow/EditableRow";
 import EditableCell from "./EditableCell/EditableCell";
 import DynamicTableToolbox from "./DynamicTableToolbox/DynamicTableToolbox";
@@ -13,16 +15,20 @@ import DynamicTableToolbox from "./DynamicTableToolbox/DynamicTableToolbox";
 import type { DynamicTableColumnType } from "./types";
 
 import "./DynamicTable.css";
-
 interface DynamicTableProps<T> {
     filter?: IFormRenderItem[];
     filterForm?: FormInstance;
-    pagination?: boolean;
+
+    pagination?: IPaginationResponse;
+    paginationState?: [[number, number], React.Dispatch<React.SetStateAction<[number, number]>>];
+
     exported?: IFormRenderItem[];
     exportForm?: FormInstance;
+
     topRef?: RefObject<HTMLElement | null>;
     bottomRef?: RefObject<HTMLElement | null>;
     stretchFactor?: number;
+
     columns: DynamicTableColumnType<T>[];
     data: T[];
     rowKey: keyof T;
@@ -33,12 +39,17 @@ interface DynamicTableProps<T> {
 const DynamicTable = <T,>({
     filter,
     filterForm,
+
     pagination,
+    paginationState,
+
     exported,
     exportForm,
+
     topRef,
     bottomRef,
-    stretchFactor = 0.7,
+    stretchFactor = 0.9,
+
     columns,
     data,
     rowKey,
@@ -79,8 +90,14 @@ const DynamicTable = <T,>({
                     locale={{ emptyText: <Empty description="Нет данных" /> }}
                 />
             </Flex>
-            {pagination && (
-                <Pagination total={85} showSizeChanger align="center" defaultCurrent={1} />
+            {pagination && paginationState && (
+                <Pagination
+                    total={pagination.total}
+                    showSizeChanger
+                    align="center"
+                    current={paginationState[0][0]}
+                    onChange={(page, pageSize) => paginationState[1]([page, pageSize])}
+                />
             )}
         </Flex>
     );

@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Flex, Typography } from "antd";
 import { useForm } from "antd/es/form/Form";
 
@@ -22,6 +22,7 @@ import "./Feeding.css";
 const { Title } = Typography;
 
 const Feeding = () => {
+    const paginationState = useState<[number, number]>([1, 10]);
     const titleRef = useRef<HTMLElement>(null);
     const [filterForm] = useForm();
     const [exportForm] = useForm();
@@ -29,7 +30,11 @@ const Feeding = () => {
         data: feedingList,
         isLoading: isLoadingList,
         error: errorList,
-    } = useGetFeedingListQuery();
+    } = useGetFeedingListQuery({
+        current: paginationState[0][0],
+        itemsPerPage: paginationState[0][1],
+    });
+
     const [deleteFeeding, optionsDelete] = useDeleteFeedingByIdMutation();
     const {
         data: formData,
@@ -42,7 +47,7 @@ const Feeding = () => {
     useRTKEffects(optionsDelete, "DELETE_FEEDING");
 
     const handleUpdateItem = (item: unknown) => {
-        console.log('PATCH', item);
+        console.log("PATCH", item);
     };
 
     return (
@@ -53,12 +58,13 @@ const Feeding = () => {
             <DynamicTable<IFeedingItem>
                 filter={filterSchema}
                 filterForm={filterForm}
-                // pagination
+                pagination={feedingList}
+                paginationState={paginationState}
                 exported={filterSchema}
                 exportForm={exportForm}
                 topRef={titleRef}
                 columns={columns(deleteFeeding, formData)}
-                data={feedingList || []}
+                data={feedingList?.data || []}
                 rowKey="uuid"
                 toolbox={<FeedingToolbox />}
                 handleUpdateItem={handleUpdateItem}

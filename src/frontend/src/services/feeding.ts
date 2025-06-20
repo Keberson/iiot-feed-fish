@@ -4,9 +4,11 @@ import type {
     IFeedingCreateEditRequest,
     IFeedingFormDataResponse,
     IFeedingItem,
+    IFeedingList,
 } from "#types/feeding.types";
 
 import type { AuthState } from "#store/auth.slice";
+import type { IOptionalPaginationRequest } from "#types/api.types";
 
 export const feedingApi = createApi({
     reducerPath: "feedingApi",
@@ -26,25 +28,41 @@ export const feedingApi = createApi({
         }),
         createFeeding: builder.mutation<IFeedingItem, IFeedingCreateEditRequest>({
             query: (body) => ({ url: ``, method: "POST", body }),
-            invalidatesTags: ["FeedingItem"],
+            invalidatesTags: [{ type: "FeedingItem", id: "PARTIAL-LIST" }],
         }),
-        getFeedingList: builder.query<IFeedingItem[], void>({
-            query: () => "",
-            providesTags: ["FeedingItem"],
+        getFeedingList: builder.query<IFeedingList, IOptionalPaginationRequest>({
+            query: (pagination) =>
+                pagination
+                    ? `?current=${pagination.current}&itemsPerPage=${pagination.itemsPerPage}`
+                    : "",
+            providesTags: (result) => [
+                ...(result?.data || []).map(({ uuid }) => ({
+                    type: "FeedingItem" as const,
+                    id: uuid,
+                })),
+                { type: "FeedingItem", id: "PARTIAL-LIST" },
+            ],
         }),
         getFeedingById: builder.query<IFeedingItem, string>({
             query: (id) => `/${id}`,
+            providesTags: (_, __, id) => [{ type: "FeedingItem", id }],
         }),
         deleteFeedingById: builder.mutation<void, string>({
             query: (id) => ({ url: `/${id}`, method: "DELETE" }),
-            invalidatesTags: ["FeedingItem"],
+            invalidatesTags: (_, __, id) => [
+                { type: "FeedingItem", id },
+                { type: "FeedingItem", id: "PARTIAL-LIST" },
+            ],
         }),
         editFeedingById: builder.mutation<
             IFeedingItem,
             { id: string; body: IFeedingCreateEditRequest }
         >({
             query: ({ id, body }) => ({ url: `/${id}`, method: "PUT", body }),
-            invalidatesTags: ["FeedingItem"],
+            invalidatesTags: (_, __, item) => [
+                { type: "FeedingItem", id: item.id },
+                { type: "FeedingItem", id: "PARTIAL-LIST" },
+            ],
         }),
     }),
 });
