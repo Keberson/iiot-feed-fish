@@ -10,7 +10,7 @@ export const authApi = createApi({
     reducerPath: "authApi",
     tagTypes: [],
     baseQuery: fetchBaseQuery({
-        baseUrl: `${import.meta.env.FRONT_API_URL || "http://localhost:4000/api"}/auth`,
+        baseUrl: `${import.meta.env.VITE_API_BASE_URL || "http://localhost:4000/api"}/auth`,
     }),
     endpoints: (builder) => ({
         login: builder.mutation<ILoginResponse, ILoginRequest>({

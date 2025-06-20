@@ -15,7 +15,7 @@ export const feedingApi = createApi({
     reducerPath: "feedingApi",
     tagTypes: ["FeedingItem"],
     baseQuery: fetchBaseQuery({
-        baseUrl: `${import.meta.env.FRONT_API_URL || "http://localhost:4000/api"}/feeding`,
+        baseUrl: `${import.meta.env.VITE_API_BASE_URL || "http://localhost:4000/api"}/feeding`,
         prepareHeaders: (headers: Headers, { getState }: { getState: () => unknown }) => {
             headers.set(
                 "Authorization",
