@@ -5,6 +5,7 @@ import json
 import jwt
 import datetime
 import csv
+import math
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from rest_framework import status
@@ -138,9 +139,78 @@ def get_feeding_form_data(request):
 @api_view(['GET', 'POST'])
 def feeding_list_create(request):
     if request.method == 'GET':
+        # Get query parameters
+        current_page = request.query_params.get('current', '1')
+        items_per_page = request.query_params.get('itemsPerPage', '10')
+        pool_id = request.query_params.get('pool')
+        feed_id = request.query_params.get('feed')
+        min_weight = request.query_params.get('min-weight', '0')
+        max_weight = request.query_params.get('max-weight')
+        
+        # Convert to integers with defaults
+        try:
+            current_page = int(current_page)
+            if current_page < 1:
+                current_page = 1
+        except ValueError:
+            current_page = 1
+            
+        try:
+            items_per_page = int(items_per_page)
+            if items_per_page < 1:
+                items_per_page = 10
+        except ValueError:
+            items_per_page = 10
+            
+        # Start with all tasks
         tasks = FeedingTask.objects.all()
-        serializer = FeedingTaskSerializer(tasks, many=True)
-        return Response(serializer.data)
+        
+        # Apply filters if provided
+        if pool_id:
+            tasks = tasks.filter(pool=pool_id)
+        
+        if feed_id:
+            tasks = tasks.filter(feed=feed_id)
+        
+        try:
+            min_weight = float(min_weight)
+            tasks = tasks.filter(weight__gte=min_weight)
+        except ValueError:
+            pass
+        
+        if max_weight:
+            try:
+                max_weight = float(max_weight)
+                tasks = tasks.filter(weight__lte=max_weight)
+            except ValueError:
+                pass
+        
+        # Calculate pagination
+        total_items = tasks.count()
+        total_pages = math.ceil(total_items / items_per_page)
+        
+        # If current_page is out of range, set to last page
+        if current_page > total_pages and total_pages > 0:
+            current_page = total_pages
+        
+        # Calculate slice indices
+        start_idx = (current_page - 1) * items_per_page
+        end_idx = start_idx + items_per_page
+        
+        # Slice the queryset
+        paginated_tasks = tasks[start_idx:end_idx]
+        
+        # Serialize the paginated data
+        serializer = FeedingTaskSerializer(paginated_tasks, many=True)
+        
+        # Return paginated response
+        return Response({
+            'data': serializer.data,
+            'total': total_items,
+            'current': current_page,
+            'itemsPerPage': items_per_page,
+            'totalPages': total_pages
+        })
 
     elif request.method == 'POST':
         serializer = FeedingTaskSerializer(data=request.data)
