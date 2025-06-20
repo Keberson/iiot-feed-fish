@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Pool, Feed, Period, FeedingTask
+from .models import Pool, Feed, Period, FeedingTask, System, Log
 
 class PoolSerializer(serializers.ModelSerializer):
     class Meta:
@@ -61,3 +61,13 @@ class FeedingTaskSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("Cannot provide both period_id and other_period")
                 
         return data 
+
+class SystemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = System
+        fields = ['id', 'wifi_ssid', 'wifi_password', 'status']
+
+class LogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Log
+        fields = ['uuid', 'action', 'when', 'description', 'type'] 

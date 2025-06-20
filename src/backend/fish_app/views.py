@@ -13,7 +13,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.db.models import Min, Max
 from .models import Period, FeedingTask
-from .serializers import PoolSerializer, FeedSerializer, PeriodSerializer, FeedingTaskSerializer
+from .serializers import PoolSerializer, FeedSerializer, PeriodSerializer, FeedingTaskSerializer, SystemSerializer, LogSerializer
 
 # Create your views here.
 def index(request):
@@ -310,3 +310,96 @@ def export_feeding_data(request):
         ])
     
     return response 
+
+@api_view(['GET'])
+def system_status(request):
+    try:
+        # Get the first system record or create one if it doesn't exist
+        system, created = System.objects.get_or_create(id=1, defaults={'status': 'ok'})
+        return Response({'status': system.status})
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET', 'PUT'])
+def system_settings(request):
+    try:
+        # Get the first system record or create one if it doesn't exist
+        system, created = System.objects.get_or_create(id=1, defaults={'status': 'ok'})
+        
+        if request.method == 'GET':
+            serializer = SystemSerializer(system)
+            return Response({
+                'wifi_ssid': serializer.data['wifi_ssid'],
+                'wifi_password': serializer.data['wifi_password']
+            })
+        
+        elif request.method == 'PUT':
+            # Only update wifi settings
+            data = {
+                'wifi_ssid': request.data.get('wifi_ssid'),
+                'wifi_password': request.data.get('wifi_password'),
+                'status': system.status  # Keep the current status
+            }
+            
+            serializer = SystemSerializer(system, data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                    'wifi_ssid': serializer.data['wifi_ssid'],
+                    'wifi_password': serializer.data['wifi_password']
+                })
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def logs_list(request):
+    # Get query parameters
+    current_page = request.query_params.get('current', '1')
+    items_per_page = request.query_params.get('itemsPerPage', '10')
+    
+    # Convert to integers with defaults
+    try:
+        current_page = int(current_page)
+        if current_page < 1:
+            current_page = 1
+    except ValueError:
+        current_page = 1
+        
+    try:
+        items_per_page = int(items_per_page)
+        if items_per_page < 1:
+            items_per_page = 10
+    except ValueError:
+        items_per_page = 10
+        
+    # Get all logs
+    logs = Log.objects.all().order_by('-when')  # Most recent first
+    
+    # Calculate pagination
+    total_items = logs.count()
+    total_pages = math.ceil(total_items / items_per_page)
+    
+    # If current_page is out of range, set to last page
+    if current_page > total_pages and total_pages > 0:
+        current_page = total_pages
+    
+    # Calculate slice indices
+    start_idx = (current_page - 1) * items_per_page
+    end_idx = start_idx + items_per_page
+    
+    # Slice the queryset
+    paginated_logs = logs[start_idx:end_idx]
+    
+    # Serialize the paginated data
+    serializer = LogSerializer(paginated_logs, many=True)
+    
+    # Return paginated response
+    return Response({
+        'data': serializer.data,
+        'total': total_items,
+        'current': current_page,
+        'itemsPerPage': items_per_page,
+        'totalPages': total_pages
+    }) 
