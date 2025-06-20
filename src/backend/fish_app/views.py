@@ -274,8 +274,8 @@ def feeding_list_create(request):
         except ValueError:
             items_per_page = 10
             
-        # Start with all tasks
-        tasks = FeedingTask.objects.all()
+        # Start with all tasks and apply default sorting by UUID
+        tasks = FeedingTask.objects.all().order_by('uuid')
         
         # Apply filters if provided
         if pool_id:
