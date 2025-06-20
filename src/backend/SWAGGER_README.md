@@ -1,92 +1,92 @@
-# Swagger Documentation for Fish Feeding API
+# Документация Swagger для API кормления рыб
 
-This project includes Swagger documentation for the Fish Feeding API.
+Этот проект включает документацию Swagger для API кормления рыб.
 
-## Setup and Installation
+## Настройка и установка
 
-1. Install the required dependencies:
+1. Установите необходимые зависимости:
    ```
    pip install -r requirements.txt
    ```
 
-2. Apply migrations:
+2. Примените миграции:
    ```
    python manage.py migrate
    ```
 
-3. Run the development server:
+3. Запустите сервер разработки:
    ```
    python manage.py runserver
    ```
 
-   Or use the provided batch file:
+   Или используйте предоставленный batch-файл:
    ```
    setup_swagger.bat
    ```
 
-## Accessing the Documentation
+## Доступ к документации
 
-Once the server is running, you can access the Swagger documentation at:
+После запуска сервера вы можете получить доступ к документации Swagger по адресу:
 
 - **Swagger UI**: [http://localhost:8000/swagger/](http://localhost:8000/swagger/)
 - **ReDoc**: [http://localhost:8000/redoc/](http://localhost:8000/redoc/)
 
-## API Endpoints
+## Конечные точки API
 
-The API includes the following endpoints:
+API включает следующие конечные точки:
 
-### Authentication
+### Аутентификация
 
-- `POST /api/auth/login` - User authentication
-- `POST /api/auth/token` - Token validation
+- `POST /api/auth/login` - Аутентификация пользователя
+- `POST /api/auth/token` - Валидация токена
 
-### Feeding Management
+### Управление кормлением
 
-- `GET /api/feeding/form-data` - Get form data for feeding configuration
-- `GET /api/feeding` - List all feeding tasks
-- `POST /api/feeding` - Create a new feeding task
-- `GET /api/feeding/{id}` - Get a specific feeding task
-- `PUT /api/feeding/{id}` - Update a specific feeding task
-- `DELETE /api/feeding/{id}` - Delete a specific feeding task
+- `GET /api/feeding/form-data` - Получение данных формы для настройки кормления
+- `GET /api/feeding` - Список всех задач кормления
+- `POST /api/feeding` - Создание новой задачи кормления
+- `GET /api/feeding/{id}` - Получение конкретной задачи кормления
+- `PUT /api/feeding/{id}` - Обновление конкретной задачи кормления
+- `DELETE /api/feeding/{id}` - Удаление конкретной задачи кормления
 
-## Data Models
+## Модели данных
 
-The API uses the following main data models:
+API использует следующие основные модели данных:
 
-- **Pool** - Represents a fish pool
-- **Feed** - Represents a type of fish feed
-- **Period** - Represents a feeding period
-- **FeedingTask** - Represents a scheduled feeding task
-- **User** - Represents a system user
-- **System** - Represents system configuration
-- **Log** - Represents system logs
-- **Timetable** - Represents feeding timetables
-- **Feeding** - Represents a feeding event
+- **Pool** - Представляет бассейн для рыбы
+- **Feed** - Представляет тип корма для рыбы
+- **Period** - Представляет период кормления
+- **FeedingTask** - Представляет запланированную задачу кормления
+- **User** - Представляет пользователя системы
+- **System** - Представляет конфигурацию системы
+- **Log** - Представляет системные журналы
+- **Timetable** - Представляет расписание кормления
+- **Feeding** - Представляет событие кормления
 
-## API Structure Diagram
+## Диаграмма структуры API
 
-See [API Structure Diagram](./api_diagram.md) for a visual representation of the API endpoints.
+См. [Диаграмма структуры API](./api_diagram.md) для визуального представления конечных точек API.
 
-## Data Models Diagram
+## Диаграмма моделей данных
 
-See [Data Models Diagram](./models_diagram.md) for a visual representation of the data models.
+См. [Диаграмма моделей данных](./models_diagram.md) для визуального представления моделей данных.
 
-## Using Swagger UI
+## Использование Swagger UI
 
-1. Open the Swagger UI at [http://localhost:8000/swagger/](http://localhost:8000/swagger/)
-2. Explore the available endpoints
-3. Try out the API by clicking on an endpoint and then clicking the "Try it out" button
-4. Fill in the required parameters and click "Execute"
-5. View the response
+1. Откройте Swagger UI по адресу [http://localhost:8000/swagger/](http://localhost:8000/swagger/)
+2. Изучите доступные конечные точки
+3. Протестируйте API, нажав на конечную точку, а затем на кнопку "Try it out"
+4. Заполните необходимые параметры и нажмите "Execute"
+5. Просмотрите ответ
 
-## Authentication
+## Аутентификация
 
-The API uses JWT (JSON Web Token) authentication. To authenticate:
+API использует аутентификацию JWT (JSON Web Token). Для аутентификации:
 
-1. Use the `/api/auth/login` endpoint with valid credentials
-2. Include the received token in the Authorization header as `Bearer <token>`
-3. You can validate tokens using the `/api/auth/token` endpoint
+1. Используйте конечную точку `/api/auth/login` с действительными учетными данными
+2. Включите полученный токен в заголовок Authorization как `Bearer <token>`
+3. Вы можете проверить токены, используя конечную точку `/api/auth/token`
 
-## Using with Docker
+## Использование с Docker
 
-If you're using Docker, make sure to expose port 8000 in your Docker configuration. The Swagger UI will be available at `http://<your-docker-host>:8000/swagger/`. 
+Если вы используете Docker, убедитесь, что порт 8000 открыт в вашей конфигурации Docker. Swagger UI будет доступен по адресу `http://<ваш-docker-хост>:8000/swagger/`. 
