@@ -22,7 +22,7 @@ def index(request):
     """
     API status endpoint
     """
-    return JsonResponse({"status": "ok", "message": "Fish feeding API is running"})
+    return JsonResponse({"status": "ok", "message": "API кормления рыб работает"})
 
 @swagger_auto_schema(
     method='post',
@@ -55,8 +55,8 @@ def index(request):
                 }
             )
         ),
-        401: "Invalid credentials",
-        400: "Bad request"
+        401: "Неверные учетные данные",
+        400: "Неверный запрос"
     }
 )
 @api_view(['POST'])
@@ -68,7 +68,7 @@ def login(request):
     Authenticates a user and returns a JWT token
     """
     if request.method != 'POST':
-        return JsonResponse({"status": "error", "message": "Method not allowed"}, status=405)
+        return JsonResponse({"status": "error", "message": "Метод не разрешен"}, status=405)
     
     try:
         data = json.loads(request.body)
@@ -76,13 +76,13 @@ def login(request):
         password = data.get('password')
         
         if not login or not password:
-            return JsonResponse({"status": "error", "message": "Login and password are required"}, status=400)
+            return JsonResponse({"status": "error", "message": "Логин и пароль обязательны"}, status=400)
         
         try:
             user = User.objects.get(login=login)
             
             if not user.check_password(password):
-                return JsonResponse({"status": "error", "message": "Invalid credentials"}, status=401)
+                return JsonResponse({"status": "error", "message": "Неверные учетные данные"}, status=401)
                 
             
             # Create JWT token
@@ -101,7 +101,7 @@ def login(request):
             
             return JsonResponse({
                 "status": "success", 
-                "message": "Authentication successful",
+                "message": "Аутентификация успешна",
                 "token": token,
                 "user": {
                     "uuid": str(user.uuid),
@@ -111,10 +111,10 @@ def login(request):
             })
             
         except User.DoesNotExist:
-            return JsonResponse({"status": "error", "message": "Invalid credentials"}, status=401)
+            return JsonResponse({"status": "error", "message": "Неверные учетные данные"}, status=401)
             
     except json.JSONDecodeError:
-        return JsonResponse({"status": "error", "message": "Invalid JSON"}, status=400)
+        return JsonResponse({"status": "error", "message": "Неверный JSON"}, status=400)
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
@@ -147,8 +147,8 @@ def login(request):
                 }
             )
         ),
-        401: "Invalid token",
-        400: "Bad request"
+        401: "Недействительный токен",
+        400: "Неверный запрос"
     }
 )
 @api_view(['POST'])
@@ -160,14 +160,14 @@ def validate_token(request):
     Validates a JWT token and returns user information
     """
     if request.method != 'POST':
-        return JsonResponse({"status": "error", "message": "Method not allowed"}, status=405)
+        return JsonResponse({"status": "error", "message": "Метод не разрешен"}, status=405)
     
     try:
         data = json.loads(request.body)
         token = data.get('token')
         
         if not token:
-            return JsonResponse({"status": "error", "message": "Token is required"}, status=400)
+            return JsonResponse({"status": "error", "message": "Токен обязателен"}, status=400)
         
         try:
             # Verify token signature
@@ -180,7 +180,7 @@ def validate_token(request):
                 
                 return JsonResponse({
                     "status": "success", 
-                    "message": "Token is valid",
+                    "message": "Токен действителен",
                     "user": {
                         "uuid": str(user.uuid),
                         "login": user.login,
@@ -189,15 +189,15 @@ def validate_token(request):
                 })
                 
             except User.DoesNotExist:
-                return JsonResponse({"status": "error", "message": "Invalid token"}, status=401)
+                return JsonResponse({"status": "error", "message": "Недействительный токен"}, status=401)
                 
         except jwt.ExpiredSignatureError:
-            return JsonResponse({"status": "error", "message": "Token has expired"}, status=401)
+            return JsonResponse({"status": "error", "message": "Срок действия токена истек"}, status=401)
         except jwt.InvalidTokenError:
-            return JsonResponse({"status": "error", "message": "Invalid token"}, status=401)
+            return JsonResponse({"status": "error", "message": "Недействительный токен"}, status=401)
             
     except json.JSONDecodeError:
-        return JsonResponse({"status": "error", "message": "Invalid JSON"}, status=400)
+        return JsonResponse({"status": "error", "message": "Неверный JSON"}, status=400)
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
@@ -274,8 +274,8 @@ def feeding_list_create(request):
         except ValueError:
             items_per_page = 10
             
-        # Start with all tasks
-        tasks = FeedingTask.objects.all()
+        # Start with all tasks and apply default sorting by UUID
+        tasks = FeedingTask.objects.all().order_by('uuid')
         
         # Apply filters if provided
         if pool_id:
@@ -329,7 +329,7 @@ def feeding_list_create(request):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"ошибки": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 @swagger_auto_schema(
     method='get',
@@ -345,7 +345,7 @@ def feeding_list_create(request):
 @swagger_auto_schema(
     method='delete',
     operation_description="Delete a specific feeding task",
-    responses={204: "No content"}
+    responses={204: "Нет содержимого"}
 )
 @swagger_auto_schema(
     method='patch',
@@ -364,7 +364,7 @@ def feeding_detail(request, id):
     try:
         task = FeedingTask.objects.get(pk=id)
     except FeedingTask.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"ошибка": "Задача кормления не найдена"}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
         serializer = FeedingTaskSerializer(task)
@@ -375,14 +375,14 @@ def feeding_detail(request, id):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"ошибки": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
         
     elif request.method == 'PATCH':
         serializer = FeedingTaskSerializer(task, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"ошибки": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
         task.delete()
@@ -491,7 +491,7 @@ def system_settings(request):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
     except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({'ошибка': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET'])
 def logs_list(request):
