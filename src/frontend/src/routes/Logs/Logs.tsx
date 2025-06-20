@@ -19,7 +19,6 @@ const Logs = () => {
             </Title>
             <DynamicTable<ILogTableItem>
                 filter={filterSchema}
-                pagination
                 topRef={titleRef}
                 columns={columns}
                 data={mockData}
