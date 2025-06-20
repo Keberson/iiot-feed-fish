@@ -35,38 +35,17 @@ export const feedingApi = createApi({
             IFeedingList,
             { pagination?: IOptionalPaginationRequest; filter?: IFeedingFilter } | undefined
         >({
-            query: (params) => {
-                if (!params) {
-                    return "";
-                }
-
-                const searchParams = new URLSearchParams();
-                const pagination = params.pagination;
-                const filter = params.filter;
-
-                if (pagination) {
-                    searchParams.set("current", String(pagination.current));
-                    searchParams.set("itemsPerPage", String(pagination.itemsPerPage));
-                }
-
-                if (filter && filter.feed) {
-                    searchParams.set("feed", filter.feed);
-                }
-
-                if (filter && filter.pool) {
-                    searchParams.set("pool", filter.pool);
-                }
-
-                if (filter && filter.minWeight) {
-                    searchParams.set("min-weight", filter.minWeight.toString());
-                }
-
-                if (filter && filter.maxWeight) {
-                    searchParams.set("max-weight", filter.maxWeight.toString());
-                }
-
-                return `?${searchParams.toString()}`;
-            },
+            query: (params) => ({
+                url: "",
+                params: {
+                    current: params?.pagination?.current,
+                    itemsPerPage: params?.pagination?.itemsPerPage,
+                    feed: params?.filter?.feed,
+                    pool: params?.filter?.pool,
+                    "min-weight": params?.filter?.minWeight,
+                    "max-weight": params?.filter?.maxWeight,
+                },
+            }),
             providesTags: (result) => [
                 ...(result?.data || []).map(({ uuid }) => ({
                     type: "FeedingItem" as const,
@@ -106,6 +85,36 @@ export const feedingApi = createApi({
                 { type: "FeedingItem", id: "PARTIAL-LIST" },
             ],
         }),
+        downloadCsv: builder.query<void, IFeedingFilter | undefined>({
+            query: (filter) => ({
+                url: "/export",
+                params: {
+                    feed: filter?.feed,
+                    pool: filter?.pool,
+                    "min-weight": filter?.minWeight,
+                    "max-weight": filter?.maxWeight,
+                },
+                method: "GET",
+                responseHandler: async (response) => {
+                    if (!response.ok) {
+                        throw new Error("Ошибка при скачивании");
+                    }
+
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "data.csv";
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    a.remove();
+
+                    return { success: true };
+                },
+                cache: "no-cache",
+            }),
+        }),
     }),
 });
 
@@ -118,4 +127,5 @@ export const {
     useDeleteFeedingByIdMutation,
     useEditFeedingByIdMutation,
     usePatchFeedingByIdMutation,
+    useLazyDownloadCsvQuery,
 } = feedingApi;

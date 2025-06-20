@@ -63,7 +63,6 @@ const DynamicTable = <T,>({
     paginationState,
 
     exported,
-    exportForm,
 
     topRef,
     bottomRef,
@@ -87,7 +86,6 @@ const DynamicTable = <T,>({
                         filterState={filterState}
                         panel={toolbox}
                         exported={exported}
-                        exportForm={exportForm}
                     />
                 )}
                 <Table

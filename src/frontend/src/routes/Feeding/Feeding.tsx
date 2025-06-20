@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import { Flex, Typography } from "antd";
-import { useForm } from "antd/es/form/Form";
 
 import {
     useDeleteFeedingByIdMutation,
@@ -30,7 +29,6 @@ const Feeding = () => {
         weight: [number, number];
     }>();
     const titleRef = useRef<HTMLElement>(null);
-    const [exportForm] = useForm();
     const {
         data: feedingList,
         isLoading: isLoadingList,
@@ -96,7 +94,6 @@ const Feeding = () => {
                 pagination={feedingList}
                 paginationState={paginationState}
                 exported={filterSchema(formData)}
-                exportForm={exportForm}
                 topRef={titleRef}
                 columns={columns(deleteFeeding, formData)}
                 data={feedingList?.data || []}

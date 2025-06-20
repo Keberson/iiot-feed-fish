@@ -1,5 +1,6 @@
 import { ExportOutlined } from "@ant-design/icons";
-import { Button, Flex, Tooltip, type FormInstance } from "antd";
+import { Button, Flex, Tooltip } from "antd";
+import { useForm } from "antd/es/form/Form";
 import { useContext } from "react";
 
 import SidenavContext from "#core/contexts/SidenavContext";
@@ -11,11 +12,11 @@ import DynamicTableExportFooter from "./DynamicTableExportFooter/DynamicTableExp
 
 interface DynamicTableExportProps {
     schema: IFormRenderItem[];
-    form: FormInstance;
 }
 
-const DynamicTableExport: React.FC<DynamicTableExportProps> = ({ schema, form }) => {
+const DynamicTableExport: React.FC<DynamicTableExportProps> = ({ schema }) => {
     const { open, close } = useContext(SidenavContext);
+    const [form] = useForm();
 
     const onExport = () => {
         open({
@@ -25,9 +26,9 @@ const DynamicTableExport: React.FC<DynamicTableExportProps> = ({ schema, form })
                 </Flex>
             ),
             props: {
-                title: "Фильтрация",
+                title: "Экспорт",
                 onClose: () => close(),
-                footer: <DynamicTableExportFooter />,
+                footer: <DynamicTableExportFooter form={form} />,
             },
         });
     };

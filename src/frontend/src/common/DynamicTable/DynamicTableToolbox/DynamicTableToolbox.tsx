@@ -1,4 +1,4 @@
-import { Flex, type FormInstance } from "antd";
+import { Flex } from "antd";
 import type React from "react";
 
 import type { IFormRenderItem } from "#common/FormRender/interface";
@@ -34,7 +34,6 @@ interface ToolboxProps {
     ];
     searchable?: boolean;
     exported?: IFormRenderItem[];
-    exportForm?: FormInstance;
     panel?: React.ReactNode;
 }
 
@@ -44,7 +43,6 @@ const DynamicTableToolbox: React.FC<ToolboxProps> = ({
     filterState,
     searchable,
     exported,
-    exportForm,
     panel,
 }) => {
     return (
@@ -53,8 +51,8 @@ const DynamicTableToolbox: React.FC<ToolboxProps> = ({
             <Flex className="dynamic-table-toolbox">
                 {filter && filterState && <DynamicTableFilter schema={filter} filterState={filterState} />}
                 {searchable && <DynamicTableSearch />}
-                {exported && exportForm && (
-                    <DynamicTableExport schema={exported} form={exportForm} />
+                {exported && (
+                    <DynamicTableExport schema={exported} />
                 )}
             </Flex>
         </Flex>
