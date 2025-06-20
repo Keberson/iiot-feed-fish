@@ -15,3 +15,17 @@ export interface IBaseErrorResponse {
     };
     status: number;
 }
+
+export interface IPaginationResponse {
+    current: number;
+    itemsPerPage: number;
+    total: number;
+    totalPages: number;
+}
+
+export interface IPaginationRequest {
+    current: number;
+    itemsPerPage: number;
+}
+
+export type IOptionalPaginationRequest = IPaginationRequest | undefined;

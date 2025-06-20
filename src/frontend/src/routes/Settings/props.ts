@@ -5,10 +5,12 @@ export const schema: IFormRenderItem[] = [
         type: "title",
         initValue: "Wi-Fi",
         level: 4,
+        name: "wifi-title",
     },
     {
         type: "text",
         initValue: "Настройка Wi-Fi сети контроллеров",
+        name: "wifi-description",
     },
     {
         type: "input",
@@ -25,5 +27,6 @@ export const schema: IFormRenderItem[] = [
     },
     {
         type: "divider",
+        name: "wifi-divider",
     },
 ];

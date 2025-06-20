@@ -1,12 +1,40 @@
-import { Button, Flex } from "antd";
+import { Button, Flex, type FormInstance } from "antd";
+
+import { useLazyDownloadCsvQuery } from "#services/feeding";
+
+import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
 
 import "./DynamicTableExportFooter.css";
 
-const DynamicTableExportFooter = () => {
+interface DynamicTableExportFooterProps {
+    form: FormInstance;
+}
+
+const DynamicTableExportFooter: React.FC<DynamicTableExportFooterProps> = ({ form }) => {
+    const [download, options] = useLazyDownloadCsvQuery();
+
+    useRTKEffects(options, "DOWNLOAD_FEEDING");
+
+    const onClick = () => {
+        const { weight, ...otherData } = form.getFieldsValue();
+
+        download({
+            minWeight: weight ? weight[0] : undefined,
+            maxWeight: weight ? weight[1] : undefined,
+            ...otherData,
+        });
+    };
+
+    const onReset = () => {
+        form.resetFields(undefined);
+    };
+
     return (
         <Flex className="dynamic-table-filter-footer">
-            <Button type="primary">Экспортировать</Button>
-            <Button>Сбросить</Button>
+            <Button type="primary" onClick={onClick}>
+                Экспортировать
+            </Button>
+            <Button onClick={onReset}>Сбросить</Button>
         </Flex>
     );
 };

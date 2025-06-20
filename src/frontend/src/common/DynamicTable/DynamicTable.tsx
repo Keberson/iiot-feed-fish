@@ -6,6 +6,8 @@ import prepareDynamicTableSchema from "#core/functions/prepareDynamicTableSchema
 
 import type { IFormRenderItem } from "#common/FormRender/interface";
 
+import type { IPaginationResponse } from "#types/api.types";
+
 import EditableRow from "./EditableRow/EditableRow";
 import EditableCell from "./EditableCell/EditableCell";
 import DynamicTableToolbox from "./DynamicTableToolbox/DynamicTableToolbox";
@@ -13,68 +15,83 @@ import DynamicTableToolbox from "./DynamicTableToolbox/DynamicTableToolbox";
 import type { DynamicTableColumnType } from "./types";
 
 import "./DynamicTable.css";
-
 interface DynamicTableProps<T> {
     filter?: IFormRenderItem[];
-    filterForm?: FormInstance;
-    pagination?: boolean;
+    filterState?: [
+        (
+            | {
+                  pool: string;
+                  feed: string;
+                  weight: [number, number];
+              }
+            | undefined
+        ),
+        React.Dispatch<
+            React.SetStateAction<
+                | {
+                      pool: string;
+                      feed: string;
+                      weight: [number, number];
+                  }
+                | undefined
+            >
+        >
+    ];
+
+    pagination?: IPaginationResponse;
+    paginationState?: [[number, number], React.Dispatch<React.SetStateAction<[number, number]>>];
+
     exported?: IFormRenderItem[];
     exportForm?: FormInstance;
+
     topRef?: RefObject<HTMLElement | null>;
     bottomRef?: RefObject<HTMLElement | null>;
     stretchFactor?: number;
+
     columns: DynamicTableColumnType<T>[];
     data: T[];
     rowKey: keyof T;
     toolbox?: ReactNode;
+    handleUpdateItem?: (partialItem: unknown, item: T) => void;
 }
 
 const DynamicTable = <T,>({
     filter,
-    filterForm,
+    filterState,
+
     pagination,
+    paginationState,
+
     exported,
-    exportForm,
+
     topRef,
     bottomRef,
-    stretchFactor = 0.7,
+    stretchFactor = 0.75,
+
     columns,
     data,
     rowKey,
     toolbox,
+    handleUpdateItem,
 }: DynamicTableProps<T>): React.ReactElement => {
     const { ref, height } = useResizable();
     const toolboxRef = useRef<HTMLElement>(null);
 
-    const handleSave = (row: T) => {
-        const newData = [...data];
-        const index = newData.findIndex((item) => row[rowKey] === item[rowKey]);
-        const item = newData[index];
-
-        newData.splice(index, 1, {
-            ...item,
-            ...row,
-        });
-
-        console.log("Save", newData);
-    };
-
     return (
         <Flex ref={ref} vertical className="dynamic-table-wrapper">
             <Flex vertical className="dynamic-table-top-part">
-                {filter && filterForm && (
+                {filter && filterState && (
                     <DynamicTableToolbox
                         filter={filter}
-                        filterForm={filterForm}
+                        filterState={filterState}
                         panel={toolbox}
                         exported={exported}
-                        exportForm={exportForm}
                     />
                 )}
                 <Table
                     components={{ body: { row: EditableRow, cell: EditableCell } }}
                     rootClassName="dynamic-table"
-                    columns={prepareDynamicTableSchema(columns, handleSave)}
+                    columns={prepareDynamicTableSchema(columns, handleUpdateItem)}
                     dataSource={data}
                     rowKey={rowKey}
                     pagination={{ position: ["none"] }}
@@ -90,8 +107,14 @@ const DynamicTable = <T,>({
                     locale={{ emptyText: <Empty description="Нет данных" /> }}
                 />
             </Flex>
-            {pagination && (
-                <Pagination total={85} showSizeChanger align="center" defaultCurrent={1} />
+            {pagination && paginationState && (
+                <Pagination
+                    total={pagination.total}
+                    showSizeChanger
+                    align="center"
+                    current={paginationState[0][0]}
+                    onChange={(page, pageSize) => paginationState[1]([page, pageSize])}
+                />
             )}
         </Flex>
     );

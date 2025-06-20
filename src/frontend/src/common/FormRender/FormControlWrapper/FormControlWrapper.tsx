@@ -37,7 +37,9 @@ const FormControlWrapper: React.FC<FormControlWrapperProps> = ({ item, form, chi
             name={item.name}
             rules={hidden ? undefined : item.validators}
             initialValue={item.initValue}
-            className={`${hidden ? "form-item-hidden" : ""}`}
+            className={`${hidden ? "form-item-hidden" : ""} ${
+                item.type === "slider" && "form-slider-wrapper"
+            }`}
             required={hidden ? undefined : item.required}
         >
             {children}

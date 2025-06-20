@@ -6,15 +6,6 @@
     flex-direction: column;
 }
 
-.form-slider-wrapper {
-    padding: 0 10px;
-    width: 90%;
-}
-
-.form-slider {
-    width: 99%;
-}
-
 .form-item-timepicker {
     width: 100%;
 }

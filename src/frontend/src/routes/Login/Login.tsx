@@ -12,6 +12,7 @@ import Fish from "#assets/Fish/Fish";
 import MessageContext from "#core/contexts/MessageContext";
 import useAppDispatch from "#core/hooks/useStore/useAppDispatch";
 import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
+import LoadingContext from "#core/contexts/LoadingContext";
 
 import FormRender from "#common/FormRender/FormRender";
 
@@ -26,6 +27,7 @@ const Login = () => {
 
     const dispatch = useAppDispatch();
     const { messageApi } = useContext(MessageContext);
+    const { stop } = useContext(LoadingContext);
     const [apiLogin, loginOptions] = useLoginMutation();
     const [form] = useForm();
 
@@ -42,6 +44,7 @@ const Login = () => {
         return apiLogin(loginData)
             .then((res) => {
                 if (res.data) {
+                    stop(LoginAction);
                     dispatch(setSession({ name: res.data.user.fullname, token: res.data?.token }));
                 }
             })

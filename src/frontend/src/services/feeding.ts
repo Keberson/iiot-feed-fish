@@ -2,18 +2,20 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import type {
     IFeedingCreateEditRequest,
+    IFeedingFilter,
     IFeedingFormDataResponse,
     IFeedingItem,
-    IFeedingTableItem,
+    IFeedingList,
 } from "#types/feeding.types";
 
 import type { AuthState } from "#store/auth.slice";
+import type { IOptionalPaginationRequest } from "#types/api.types";
 
 export const feedingApi = createApi({
     reducerPath: "feedingApi",
     tagTypes: ["FeedingItem"],
     baseQuery: fetchBaseQuery({
-        baseUrl: `${import.meta.env.FRONT_API_URL || "http://localhost:4000/api"}/feeding`,
+        baseUrl: `${import.meta.env.VITE_API_BASE_URL || "http://localhost:4000/api"}/feeding`,
         prepareHeaders: (headers: Headers, { getState }: { getState: () => unknown }) => {
             headers.set(
                 "Authorization",
@@ -27,37 +29,91 @@ export const feedingApi = createApi({
         }),
         createFeeding: builder.mutation<IFeedingItem, IFeedingCreateEditRequest>({
             query: (body) => ({ url: ``, method: "POST", body }),
-            invalidatesTags: ["FeedingItem"],
+            invalidatesTags: [{ type: "FeedingItem", id: "PARTIAL-LIST" }],
         }),
-        getFeedingList: builder.query<IFeedingTableItem[], void>({
-            query: () => "",
-            providesTags: ["FeedingItem"],
-            transformResponse: (response: IFeedingItem[]) => {
-                return response.map((item) => ({
-                    id: item.uuid,
-                    pool: item.pool.name,
-                    feed: item.feed.name,
-                    weight: item.weight,
-                    period:
-                        item.period !== "other"
-                            ? item.period.name
-                            : item.other_period.split(":").slice(0, 2).join(":"),
-                }));
-            },
+        getFeedingList: builder.query<
+            IFeedingList,
+            { pagination?: IOptionalPaginationRequest; filter?: IFeedingFilter } | undefined
+        >({
+            query: (params) => ({
+                url: "",
+                params: {
+                    current: params?.pagination?.current,
+                    itemsPerPage: params?.pagination?.itemsPerPage,
+                    feed: params?.filter?.feed,
+                    pool: params?.filter?.pool,
+                    "min-weight": params?.filter?.minWeight,
+                    "max-weight": params?.filter?.maxWeight,
+                },
+            }),
+            providesTags: (result) => [
+                ...(result?.data || []).map(({ uuid }) => ({
+                    type: "FeedingItem" as const,
+                    id: uuid,
+                })),
+                { type: "FeedingItem", id: "PARTIAL-LIST" },
+            ],
         }),
         getFeedingById: builder.query<IFeedingItem, string>({
             query: (id) => `/${id}`,
+            providesTags: (_, __, id) => [{ type: "FeedingItem", id }],
         }),
         deleteFeedingById: builder.mutation<void, string>({
             query: (id) => ({ url: `/${id}`, method: "DELETE" }),
-            invalidatesTags: ["FeedingItem"],
+            invalidatesTags: (_, __, id) => [
+                { type: "FeedingItem", id },
+                { type: "FeedingItem", id: "PARTIAL-LIST" },
+            ],
         }),
         editFeedingById: builder.mutation<
             IFeedingItem,
             { id: string; body: IFeedingCreateEditRequest }
         >({
             query: ({ id, body }) => ({ url: `/${id}`, method: "PUT", body }),
-            invalidatesTags: ["FeedingItem"],
+            invalidatesTags: (_, __, item) => [
+                { type: "FeedingItem", id: item.id },
+                { type: "FeedingItem", id: "PARTIAL-LIST" },
+            ],
+        }),
+        patchFeedingById: builder.mutation<
+            IFeedingItem,
+            { id: string; body: Partial<IFeedingCreateEditRequest> }
+        >({
+            query: ({ id, body }) => ({ url: `/${id}`, method: "PATCH", body }),
+            invalidatesTags: (_, __, item) => [
+                { type: "FeedingItem", id: item.id },
+                { type: "FeedingItem", id: "PARTIAL-LIST" },
+            ],
+        }),
+        downloadCsv: builder.query<void, IFeedingFilter | undefined>({
+            query: (filter) => ({
+                url: "/export",
+                params: {
+                    feed: filter?.feed,
+                    pool: filter?.pool,
+                    "min-weight": filter?.minWeight,
+                    "max-weight": filter?.maxWeight,
+                },
+                method: "GET",
+                responseHandler: async (response) => {
+                    if (!response.ok) {
+                        throw new Error("Ошибка при скачивании");
+                    }
+
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "data.csv";
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    a.remove();
+
+                    return { success: true };
+                },
+                cache: "no-cache",
+            }),
         }),
     }),
 });
@@ -70,4 +126,6 @@ export const {
     useGetFeedingByIdQuery,
     useDeleteFeedingByIdMutation,
     useEditFeedingByIdMutation,
+    usePatchFeedingByIdMutation,
+    useLazyDownloadCsvQuery,
 } = feedingApi;

@@ -1,5 +1,5 @@
 import { Divider, Flex, Typography } from "antd";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 import type { IFeedingTableItem } from "#types/feeding.types";
 
@@ -18,8 +18,14 @@ const { Title } = Typography;
 
 const General = () => {
     const titleRef = useRef<HTMLElement>(null);
+    const paginationState = useState<[number, number]>([1, 10]);
 
-    const { data, isLoading, error } = useGetFeedingListQuery();
+    const { data, isLoading, error } = useGetFeedingListQuery({
+        pagination: {
+            current: paginationState[0][0],
+            itemsPerPage: paginationState[0][1],
+        },
+    });
 
     useRTKEffects({ isLoading, error }, "GET_FEEDING_GENERAL");
 
@@ -33,10 +39,20 @@ const General = () => {
                         Запланированное кормление
                     </Title>
                     <DynamicTable<IFeedingTableItem>
-                        // pagination
+                        pagination={data}
+                        paginationState={paginationState}
                         topRef={titleRef}
                         columns={columns}
-                        data={data || []}
+                        data={(data?.data || []).map((item) => ({
+                            id: item.uuid,
+                            pool: item.pool.name,
+                            feed: item.feed.name,
+                            weight: item.weight,
+                            period:
+                                item.period !== "other"
+                                    ? item.period.name
+                                    : item.other_period.split(":").slice(0, 2).join(":"),
+                        }))}
                         rowKey="id"
                     />
                 </Flex>

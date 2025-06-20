@@ -38,7 +38,6 @@ USER django_user
 
 COPY --chown=django_user:django_user . .
 
-# Создаем пустую папку migrations если ее нет
 RUN mkdir -p fish_app/migrations && \
     touch fish_app/migrations/__init__.py && \
     chmod +x /app/entrypoint.sh

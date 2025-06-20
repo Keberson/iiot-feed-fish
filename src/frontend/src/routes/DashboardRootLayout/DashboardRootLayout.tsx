@@ -13,6 +13,7 @@ import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
 import useAppSelector from "#core/hooks/useStore/useAppSelector";
 import { setSession } from "#store/auth.slice";
 import useAppDispatch from "#core/hooks/useStore/useAppDispatch";
+import type { IBaseErrorResponse } from "#types/api.types";
 
 const { Title } = Typography;
 
@@ -28,7 +29,13 @@ const DashboardRootLayout = () => {
     useRTKEffects(options, "DASHBOARD_CHECK_TOKEN");
 
     useEffect(() => {
-        checkTokenApi({ token: session?.token || "" }).catch(() => dispatch(setSession(null)));
+        checkTokenApi({ token: session?.token || "" })
+            .then((result) => {
+                if (result.error && (result.error as IBaseErrorResponse).status === 401) {
+                    dispatch(setSession(null));
+                }
+            })
+            .catch(() => dispatch(setSession(null)));
     }, [pathname]);
 
     return (

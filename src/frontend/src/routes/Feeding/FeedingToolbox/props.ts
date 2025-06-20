@@ -32,7 +32,7 @@ export const createSchema = (formData: IFeedingFormDataResponse): IFormRenderIte
     },
     {
         type: "select",
-        label: "Время",
+        label: "Период",
         name: "period",
         options: [
             ...formData.period.map((item) => ({ value: item.id, label: item.name })),
@@ -44,7 +44,7 @@ export const createSchema = (formData: IFeedingFormDataResponse): IFormRenderIte
     },
     {
         type: "time",
-        label: "Время (другое)",
+        label: "Период (другое)",
         name: "other_period",
         dependencies: {
             hide: {
