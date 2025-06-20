@@ -52,7 +52,7 @@ interface DynamicTableProps<T> {
     data: T[];
     rowKey: keyof T;
     toolbox?: ReactNode;
-    handleUpdateItem?: (item: T) => void;
+    handleUpdateItem?: (partialItem: unknown, item: T) => void;
 }
 
 const DynamicTable = <T,>({

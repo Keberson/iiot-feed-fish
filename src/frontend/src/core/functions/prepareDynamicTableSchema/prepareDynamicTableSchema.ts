@@ -4,7 +4,7 @@ import type { DynamicTableColumnType } from "#common/DynamicTable/types";
 
 const prepareDynamicTableSchema = <T>(
     schema: DynamicTableColumnType<T>[],
-    handleSave?: (row: T) => void
+    handleSave?: (partialItem: unknown, item: T) => void
 ): ColumnType<T>[] => {
     return schema.map((col) => {
         if (!col.editable) {

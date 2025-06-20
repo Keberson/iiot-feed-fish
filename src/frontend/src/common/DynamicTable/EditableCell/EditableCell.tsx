@@ -12,7 +12,7 @@ interface EditableCellProps<T> {
     editable: boolean;
     dataIndex: keyof T;
     record: T;
-    handleSave: (record: unknown) => void;
+    handleSave: (partialRecord: unknown, record: T) => void;
     editType?: "input" | "select";
     inputType?: "number" | "text";
     options?: DefaultOptionType[];
@@ -55,7 +55,7 @@ const EditableCell = <T,>({
             const values = await form.validateFields();
 
             toggleEdit();
-            handleSave(values);
+            handleSave(values, record);
         } catch (errInfo) {
             console.error("Save failed:", errInfo);
         }

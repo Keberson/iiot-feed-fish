@@ -6,6 +6,7 @@ import {
     useDeleteFeedingByIdMutation,
     useGetFeedingFormDataQuery,
     useGetFeedingListQuery,
+    usePatchFeedingByIdMutation,
 } from "#services/feeding";
 
 import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
@@ -53,13 +54,35 @@ const Feeding = () => {
         isLoading: isLoadingFormData,
         error: errorFormData,
     } = useGetFeedingFormDataQuery();
+    const [patchFeeding, optionsPatch] = usePatchFeedingByIdMutation();
 
     useRTKEffects({ isLoading: isLoadingList, error: errorList }, "GET_FEEDING");
     useRTKEffects({ isLoading: isLoadingFormData, error: errorFormData }, "GET_FORM-DATA");
     useRTKEffects(optionsDelete, "DELETE_FEEDING");
+    useRTKEffects(optionsPatch, "PATCH_FEEDING");
 
-    const handleUpdateItem = (item: unknown) => {
-        console.log("PATCH", item);
+    const handleUpdateItem = (partialItems: unknown, item: unknown) => {
+        const itemCasted = item as IFeedingItem;
+        const partialItemsCasted = partialItems as {
+            "pool.id"?: string;
+            "feed.id"?: string;
+            weight?: number;
+        };
+
+        if ("pool.id" in partialItemsCasted) {
+            patchFeeding({ id: itemCasted.uuid, body: { pool_id: partialItemsCasted["pool.id"] } });
+        }
+
+        if ("feed.id" in partialItemsCasted) {
+            patchFeeding({
+                id: itemCasted.uuid,
+                body: { feed_id: partialItemsCasted["feed.id"] },
+            });
+        }
+
+        if ("weight" in partialItemsCasted) {
+            patchFeeding({ id: itemCasted.uuid, body: { weight: partialItemsCasted["weight"] } });
+        }
     };
 
     return (

@@ -96,6 +96,16 @@ export const feedingApi = createApi({
                 { type: "FeedingItem", id: "PARTIAL-LIST" },
             ],
         }),
+        patchFeedingById: builder.mutation<
+            IFeedingItem,
+            { id: string; body: Partial<IFeedingCreateEditRequest> }
+        >({
+            query: ({ id, body }) => ({ url: `/${id}`, method: "PATCH", body }),
+            invalidatesTags: (_, __, item) => [
+                { type: "FeedingItem", id: item.id },
+                { type: "FeedingItem", id: "PARTIAL-LIST" },
+            ],
+        }),
     }),
 });
 
@@ -107,4 +117,5 @@ export const {
     useGetFeedingByIdQuery,
     useDeleteFeedingByIdMutation,
     useEditFeedingByIdMutation,
+    usePatchFeedingByIdMutation,
 } = feedingApi;
