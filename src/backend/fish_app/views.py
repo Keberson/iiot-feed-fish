@@ -16,6 +16,8 @@ from .models import Period, FeedingTask
 from .serializers import PoolSerializer, FeedSerializer, PeriodSerializer, FeedingTaskSerializer, SystemSerializer, LogSerializer
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from .decorators import log_event
+from .utils import create_log_entry, log_arduino_event
 
 # Create your views here.
 def index(request):
@@ -68,7 +70,7 @@ def login(request):
     Authenticates a user and returns a JWT token
     """
     if request.method != 'POST':
-        return JsonResponse({"status": "error", "message": "Метод не разрешен"}, status=405)
+        return JsonResponse({"status": "error", "message": "Метод не разрешен"}, status=405, json_dumps_params={'ensure_ascii': False})
     
     try:
         data = json.loads(request.body)
@@ -76,13 +78,13 @@ def login(request):
         password = data.get('password')
         
         if not login or not password:
-            return JsonResponse({"status": "error", "message": "Логин и пароль обязательны"}, status=400)
+            return JsonResponse({"status": "error", "message": "Логин и пароль обязательны"}, status=400, json_dumps_params={'ensure_ascii': False})
         
         try:
             user = User.objects.get(login=login)
             
             if not user.check_password(password):
-                return JsonResponse({"status": "error", "message": "Неверные учетные данные"}, status=401)
+                return JsonResponse({"status": "error", "message": "Неверные учетные данные"}, status=401, json_dumps_params={'ensure_ascii': False})
                 
             
             # Create JWT token
@@ -111,12 +113,12 @@ def login(request):
             })
             
         except User.DoesNotExist:
-            return JsonResponse({"status": "error", "message": "Неверные учетные данные"}, status=401)
+            return JsonResponse({"status": "error", "message": "Неверные учетные данные"}, status=401, json_dumps_params={'ensure_ascii': False})
             
     except json.JSONDecodeError:
-        return JsonResponse({"status": "error", "message": "Неверный JSON"}, status=400)
+        return JsonResponse({"status": "error", "message": "Неверный JSON"}, status=400, json_dumps_params={'ensure_ascii': False})
     except Exception as e:
-        return JsonResponse({"status": "error", "message": str(e)}, status=500)
+        return JsonResponse({"status": "error", "message": str(e)}, status=500, json_dumps_params={'ensure_ascii': False})
 
 @swagger_auto_schema(
     method='post',
@@ -160,14 +162,14 @@ def validate_token(request):
     Validates a JWT token and returns user information
     """
     if request.method != 'POST':
-        return JsonResponse({"status": "error", "message": "Метод не разрешен"}, status=405)
+        return JsonResponse({"status": "error", "message": "Метод не разрешен"}, status=405, json_dumps_params={'ensure_ascii': False})
     
     try:
         data = json.loads(request.body)
         token = data.get('token')
         
         if not token:
-            return JsonResponse({"status": "error", "message": "Токен обязателен"}, status=400)
+            return JsonResponse({"status": "error", "message": "Токен обязателен"}, status=400, json_dumps_params={'ensure_ascii': False})
         
         try:
             # Verify token signature
@@ -189,17 +191,17 @@ def validate_token(request):
                 })
                 
             except User.DoesNotExist:
-                return JsonResponse({"status": "error", "message": "Недействительный токен"}, status=401)
+                return JsonResponse({"status": "error", "message": "Недействительный токен"}, status=401, json_dumps_params={'ensure_ascii': False})
                 
         except jwt.ExpiredSignatureError:
-            return JsonResponse({"status": "error", "message": "Срок действия токена истек"}, status=401)
+            return JsonResponse({"status": "error", "message": "Срок действия токена истек"}, status=401, json_dumps_params={'ensure_ascii': False})
         except jwt.InvalidTokenError:
-            return JsonResponse({"status": "error", "message": "Недействительный токен"}, status=401)
+            return JsonResponse({"status": "error", "message": "Недействительный токен"}, status=401, json_dumps_params={'ensure_ascii': False})
             
     except json.JSONDecodeError:
-        return JsonResponse({"status": "error", "message": "Неверный JSON"}, status=400)
+        return JsonResponse({"status": "error", "message": "Неверный JSON"}, status=400, json_dumps_params={'ensure_ascii': False})
     except Exception as e:
-        return JsonResponse({"status": "error", "message": str(e)}, status=500)
+        return JsonResponse({"status": "error", "message": str(e)}, status=500, json_dumps_params={'ensure_ascii': False})
 
 @swagger_auto_schema(
     method='get',
@@ -243,6 +245,7 @@ def get_feeding_form_data(request):
     responses={201: FeedingTaskSerializer}
 )
 @api_view(['GET', 'POST'])
+@log_event(log_type='system', action=None)
 def feeding_list_create(request):
     """
     List all feeding tasks or create a new one
@@ -353,6 +356,7 @@ def feeding_list_create(request):
     responses={200: FeedingTaskSerializer}
 )
 @api_view(['GET', 'PUT', 'DELETE', 'PATCH'])
+@log_event(log_type='system')
 def feeding_detail(request, id):
     """
     Retrieve, update or delete a feeding task
@@ -461,6 +465,7 @@ def system_status(request):
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET', 'PUT'])
+@log_event(log_type='system', action='update_wifi')
 def system_settings(request):
     try:
         # Get the first system record or create one if it doesn't exist
@@ -543,3 +548,61 @@ def logs_list(request):
         'itemsPerPage': items_per_page,
         'totalPages': total_pages
     }) 
+
+@swagger_auto_schema(
+    method='post',
+    operation_description="Arduino sensor data endpoint",
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'sensor_id': openapi.Schema(type=openapi.TYPE_STRING, description='Sensor ID'),
+            'reading': openapi.Schema(type=openapi.TYPE_NUMBER, description='Sensor reading'),
+            'timestamp': openapi.Schema(type=openapi.TYPE_STRING, description='Timestamp of reading'),
+        }
+    ),
+    responses={
+        200: openapi.Response(
+            description="Data received successfully",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'status': openapi.Schema(type=openapi.TYPE_STRING, description='Response status'),
+                    'message': openapi.Schema(type=openapi.TYPE_STRING, description='Response message'),
+                }
+            )
+        ),
+        400: "Неверный запрос"
+    }
+)
+@api_view(['POST'])
+@csrf_exempt
+def arduino_sensor_data(request):
+    """
+    Arduino sensor data endpoint
+    
+    Receives sensor data from Arduino and logs it
+    """
+    if request.method != 'POST':
+        return JsonResponse({"status": "error", "message": "Метод не разрешен"}, status=405, json_dumps_params={'ensure_ascii': False})
+    
+    try:
+        data = json.loads(request.body)
+        sensor_id = data.get('sensor_id')
+        reading = data.get('reading')
+        timestamp = data.get('timestamp')
+        
+        if not sensor_id or reading is None:
+            return JsonResponse({"status": "error", "message": "Отсутствуют обязательные поля"}, status=400, json_dumps_params={'ensure_ascii': False})
+        
+        # Log the Arduino event
+        log_arduino_event('sensor_reading', data)
+        
+        return JsonResponse({
+            "status": "success", 
+            "message": "Данные получены"
+        })
+            
+    except json.JSONDecodeError:
+        return JsonResponse({"status": "error", "message": "Неверный JSON"}, status=400, json_dumps_params={'ensure_ascii': False})
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=500, json_dumps_params={'ensure_ascii': False}) 
