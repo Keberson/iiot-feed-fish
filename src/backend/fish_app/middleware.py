@@ -17,13 +17,13 @@ class JWTAuthMiddleware:
             
         auth_header = request.headers.get('Authorization')
         if not auth_header or not auth_header.startswith('Bearer '):
-            return JsonResponse({'error': 'Токен отсутствует'}, status=401)
+            return JsonResponse({'status': 'error', 'message': 'Токен отсутствует'}, status=401, json_dumps_params={'ensure_ascii': False})
             
         token = auth_header.split(' ')[1]
         
         try:
             User.objects.get(jwt=token)
         except User.DoesNotExist:
-            return JsonResponse({'error': 'Недействительный токен'}, status=401)
+            return JsonResponse({'status': 'error', 'message': 'Недействительный токен'}, status=401, json_dumps_params={'ensure_ascii': False})
             
         return self.get_response(request)

@@ -18,4 +18,7 @@ urlpatterns = [
     
     # Logs endpoint
     path('logs', views.logs_list, name='logs_list'),
+    
+    # Arduino endpoints
+    path('arduino/sensor', views.arduino_sensor_data, name='arduino_sensor_data'),
 ] 
