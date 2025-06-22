@@ -16,8 +16,27 @@ from .models import Period, FeedingTask
 from .serializers import PoolSerializer, FeedSerializer, PeriodSerializer, FeedingTaskSerializer, SystemSerializer, LogSerializer
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from .decorators import log_event
+from .utils import create_log_entry, log_arduino_event
 
 # Create your views here.
+@swagger_auto_schema(
+    method='get',
+    operation_description="API status endpoint",
+    responses={
+        200: openapi.Response(
+            description="API status",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'status': openapi.Schema(type=openapi.TYPE_STRING, description='API status'),
+                    'message': openapi.Schema(type=openapi.TYPE_STRING, description='Status message')
+                }
+            )
+        )
+    }
+)
+@api_view(['GET'])
 def index(request):
     """
     API status endpoint
@@ -68,7 +87,7 @@ def login(request):
     Authenticates a user and returns a JWT token
     """
     if request.method != 'POST':
-        return JsonResponse({"status": "error", "message": "Метод не разрешен"}, status=405)
+        return JsonResponse({"status": "error", "message": "Метод не разрешен"}, status=405, json_dumps_params={'ensure_ascii': False})
     
     try:
         data = json.loads(request.body)
@@ -76,13 +95,13 @@ def login(request):
         password = data.get('password')
         
         if not login or not password:
-            return JsonResponse({"status": "error", "message": "Логин и пароль обязательны"}, status=400)
+            return JsonResponse({"status": "error", "message": "Логин и пароль обязательны"}, status=400, json_dumps_params={'ensure_ascii': False})
         
         try:
             user = User.objects.get(login=login)
             
             if not user.check_password(password):
-                return JsonResponse({"status": "error", "message": "Неверные учетные данные"}, status=401)
+                return JsonResponse({"status": "error", "message": "Неверные учетные данные"}, status=401, json_dumps_params={'ensure_ascii': False})
                 
             
             # Create JWT token
@@ -111,12 +130,12 @@ def login(request):
             })
             
         except User.DoesNotExist:
-            return JsonResponse({"status": "error", "message": "Неверные учетные данные"}, status=401)
+            return JsonResponse({"status": "error", "message": "Неверные учетные данные"}, status=401, json_dumps_params={'ensure_ascii': False})
             
     except json.JSONDecodeError:
-        return JsonResponse({"status": "error", "message": "Неверный JSON"}, status=400)
+        return JsonResponse({"status": "error", "message": "Неверный JSON"}, status=400, json_dumps_params={'ensure_ascii': False})
     except Exception as e:
-        return JsonResponse({"status": "error", "message": str(e)}, status=500)
+        return JsonResponse({"status": "error", "message": str(e)}, status=500, json_dumps_params={'ensure_ascii': False})
 
 @swagger_auto_schema(
     method='post',
@@ -160,14 +179,14 @@ def validate_token(request):
     Validates a JWT token and returns user information
     """
     if request.method != 'POST':
-        return JsonResponse({"status": "error", "message": "Метод не разрешен"}, status=405)
+        return JsonResponse({"status": "error", "message": "Метод не разрешен"}, status=405, json_dumps_params={'ensure_ascii': False})
     
     try:
         data = json.loads(request.body)
         token = data.get('token')
         
         if not token:
-            return JsonResponse({"status": "error", "message": "Токен обязателен"}, status=400)
+            return JsonResponse({"status": "error", "message": "Токен обязателен"}, status=400, json_dumps_params={'ensure_ascii': False})
         
         try:
             # Verify token signature
@@ -189,17 +208,17 @@ def validate_token(request):
                 })
                 
             except User.DoesNotExist:
-                return JsonResponse({"status": "error", "message": "Недействительный токен"}, status=401)
+                return JsonResponse({"status": "error", "message": "Недействительный токен"}, status=401, json_dumps_params={'ensure_ascii': False})
                 
         except jwt.ExpiredSignatureError:
-            return JsonResponse({"status": "error", "message": "Срок действия токена истек"}, status=401)
+            return JsonResponse({"status": "error", "message": "Срок действия токена истек"}, status=401, json_dumps_params={'ensure_ascii': False})
         except jwt.InvalidTokenError:
-            return JsonResponse({"status": "error", "message": "Недействительный токен"}, status=401)
+            return JsonResponse({"status": "error", "message": "Недействительный токен"}, status=401, json_dumps_params={'ensure_ascii': False})
             
     except json.JSONDecodeError:
-        return JsonResponse({"status": "error", "message": "Неверный JSON"}, status=400)
+        return JsonResponse({"status": "error", "message": "Неверный JSON"}, status=400, json_dumps_params={'ensure_ascii': False})
     except Exception as e:
-        return JsonResponse({"status": "error", "message": str(e)}, status=500)
+        return JsonResponse({"status": "error", "message": str(e)}, status=500, json_dumps_params={'ensure_ascii': False})
 
 @swagger_auto_schema(
     method='get',
@@ -243,6 +262,7 @@ def get_feeding_form_data(request):
     responses={201: FeedingTaskSerializer}
 )
 @api_view(['GET', 'POST'])
+@log_event(log_type='system', action=None)
 def feeding_list_create(request):
     """
     List all feeding tasks or create a new one
@@ -353,6 +373,7 @@ def feeding_list_create(request):
     responses={200: FeedingTaskSerializer}
 )
 @api_view(['GET', 'PUT', 'DELETE', 'PATCH'])
+@log_event(log_type='system')
 def feeding_detail(request, id):
     """
     Retrieve, update or delete a feeding task
@@ -388,6 +409,19 @@ def feeding_detail(request, id):
         task.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+@swagger_auto_schema(
+    method='get',
+    operation_description="Export feeding data to CSV",
+    manual_parameters=[
+        openapi.Parameter('pool', openapi.IN_QUERY, description="Filter by pool UUID", type=openapi.TYPE_STRING, format='uuid'),
+        openapi.Parameter('feed', openapi.IN_QUERY, description="Filter by feed UUID", type=openapi.TYPE_STRING, format='uuid'),
+        openapi.Parameter('min-weight', openapi.IN_QUERY, description="Minimum weight filter", type=openapi.TYPE_NUMBER),
+        openapi.Parameter('max-weight', openapi.IN_QUERY, description="Maximum weight filter", type=openapi.TYPE_NUMBER),
+    ],
+    responses={
+        200: openapi.Response(description="CSV file with feeding data")
+    }
+)
 @api_view(['GET'])
 def export_feeding_data(request):
     # Get query parameters for filtering
@@ -451,6 +485,22 @@ def export_feeding_data(request):
     
     return response 
 
+@swagger_auto_schema(
+    method='get',
+    operation_description="Get system status",
+    responses={
+        200: openapi.Response(
+            description="System status",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'status': openapi.Schema(type=openapi.TYPE_STRING, description='System status (ok, warning, error)')
+                }
+            )
+        ),
+        500: "Internal server error"
+    }
+)
 @api_view(['GET'])
 def system_status(request):
     try:
@@ -460,7 +510,50 @@ def system_status(request):
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+@swagger_auto_schema(
+    method='get',
+    operation_description="Get system WiFi settings",
+    responses={
+        200: openapi.Response(
+            description="System WiFi settings",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'wifi_ssid': openapi.Schema(type=openapi.TYPE_STRING, description='WiFi SSID'),
+                    'wifi_password': openapi.Schema(type=openapi.TYPE_STRING, description='WiFi password')
+                }
+            )
+        ),
+        500: "Internal server error"
+    }
+)
+@swagger_auto_schema(
+    method='put',
+    operation_description="Update system WiFi settings",
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'wifi_ssid': openapi.Schema(type=openapi.TYPE_STRING, description='WiFi SSID'),
+            'wifi_password': openapi.Schema(type=openapi.TYPE_STRING, description='WiFi password')
+        }
+    ),
+    responses={
+        200: openapi.Response(
+            description="Updated WiFi settings",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'wifi_ssid': openapi.Schema(type=openapi.TYPE_STRING, description='WiFi SSID'),
+                    'wifi_password': openapi.Schema(type=openapi.TYPE_STRING, description='WiFi password')
+                }
+            )
+        ),
+        400: "Bad request",
+        500: "Internal server error"
+    }
+)
 @api_view(['GET', 'PUT'])
+@log_event(log_type='system', action='update_wifi')
 def system_settings(request):
     try:
         # Get the first system record or create one if it doesn't exist
@@ -493,11 +586,40 @@ def system_settings(request):
     except Exception as e:
         return Response({'ошибка': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+@swagger_auto_schema(
+    method='get',
+    operation_description="Get logs list with filtering options",
+    manual_parameters=[
+        openapi.Parameter('current', openapi.IN_QUERY, description="Current page number", type=openapi.TYPE_INTEGER),
+        openapi.Parameter('itemsPerPage', openapi.IN_QUERY, description="Number of items per page", type=openapi.TYPE_INTEGER),
+        openapi.Parameter('type', openapi.IN_QUERY, description="Log type filter (cart, system, bunker)", type=openapi.TYPE_STRING, enum=['cart', 'system', 'bunker']),
+        openapi.Parameter('dateMin', openapi.IN_QUERY, description="Minimum date filter (YYYY-MM-DD)", type=openapi.TYPE_STRING, format='date'),
+        openapi.Parameter('dateMax', openapi.IN_QUERY, description="Maximum date filter (YYYY-MM-DD)", type=openapi.TYPE_STRING, format='date'),
+    ],
+    responses={
+        200: openapi.Response(
+            description="Logs list with pagination",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'data': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_OBJECT, ref=LogSerializer)),
+                    'total': openapi.Schema(type=openapi.TYPE_INTEGER, description='Total number of logs'),
+                    'current': openapi.Schema(type=openapi.TYPE_INTEGER, description='Current page number'),
+                    'itemsPerPage': openapi.Schema(type=openapi.TYPE_INTEGER, description='Number of items per page'),
+                    'totalPages': openapi.Schema(type=openapi.TYPE_INTEGER, description='Total number of pages')
+                }
+            )
+        )
+    }
+)
 @api_view(['GET'])
 def logs_list(request):
     # Get query parameters
     current_page = request.query_params.get('current', '1')
     items_per_page = request.query_params.get('itemsPerPage', '10')
+    log_type = request.query_params.get('type')
+    date_min = request.query_params.get('dateMin')
+    date_max = request.query_params.get('dateMax')
     
     # Convert to integers with defaults
     try:
@@ -516,6 +638,28 @@ def logs_list(request):
         
     # Get all logs
     logs = Log.objects.all().order_by('-when')  # Most recent first
+    
+    # Apply filters if provided
+    if log_type and log_type in ['cart', 'system', 'bunker']:
+        logs = logs.filter(type=log_type)
+    
+    if date_min:
+        try:
+            # Convert date string to datetime with time set to beginning of day
+            from datetime import datetime
+            date_min_obj = datetime.strptime(date_min, '%Y-%m-%d')
+            logs = logs.filter(when__gte=date_min_obj)
+        except ValueError:
+            pass  # Invalid date format, ignore filter
+    
+    if date_max:
+        try:
+            # Convert date string to datetime with time set to end of day
+            from datetime import datetime, timedelta
+            date_max_obj = datetime.strptime(date_max, '%Y-%m-%d') + timedelta(days=1) - timedelta(microseconds=1)
+            logs = logs.filter(when__lte=date_max_obj)
+        except ValueError:
+            pass  # Invalid date format, ignore filter
     
     # Calculate pagination
     total_items = logs.count()
@@ -542,4 +686,62 @@ def logs_list(request):
         'current': current_page,
         'itemsPerPage': items_per_page,
         'totalPages': total_pages
-    }) 
+    })
+
+@swagger_auto_schema(
+    method='post',
+    operation_description="Arduino sensor data endpoint",
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'sensor_id': openapi.Schema(type=openapi.TYPE_STRING, description='Sensor ID'),
+            'reading': openapi.Schema(type=openapi.TYPE_NUMBER, description='Sensor reading'),
+            'timestamp': openapi.Schema(type=openapi.TYPE_STRING, description='Timestamp of reading'),
+        }
+    ),
+    responses={
+        200: openapi.Response(
+            description="Data received successfully",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'status': openapi.Schema(type=openapi.TYPE_STRING, description='Response status'),
+                    'message': openapi.Schema(type=openapi.TYPE_STRING, description='Response message'),
+                }
+            )
+        ),
+        400: "Неверный запрос"
+    }
+)
+@api_view(['POST'])
+@csrf_exempt
+def arduino_sensor_data(request):
+    """
+    Arduino sensor data endpoint
+    
+    Receives sensor data from Arduino and logs it
+    """
+    if request.method != 'POST':
+        return JsonResponse({"status": "error", "message": "Метод не разрешен"}, status=405, json_dumps_params={'ensure_ascii': False})
+    
+    try:
+        data = json.loads(request.body)
+        sensor_id = data.get('sensor_id')
+        reading = data.get('reading')
+        timestamp = data.get('timestamp')
+        
+        if not sensor_id or reading is None:
+            return JsonResponse({"status": "error", "message": "Отсутствуют обязательные поля"}, status=400, json_dumps_params={'ensure_ascii': False})
+        
+        # Log the Arduino event
+        log_arduino_event('sensor_reading', data)
+        
+        return JsonResponse({
+            "status": "success", 
+            "message": "Данные получены"
+        })
+            
+    except json.JSONDecodeError:
+        return JsonResponse({"status": "error", "message": "Неверный JSON"}, status=400, json_dumps_params={'ensure_ascii': False})
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=500, json_dumps_params={'ensure_ascii': False}) 
