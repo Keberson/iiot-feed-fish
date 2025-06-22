@@ -393,8 +393,8 @@ def export_feeding_data(request):
     # Get query parameters for filtering
     pool_id = request.query_params.get('pool')
     feed_id = request.query_params.get('feed')
-    min_weight = request.query_params.get('min-weight')
-    max_weight = request.query_params.get('max-weight')
+    min_weight = request.query_params.get('minWeight')
+    max_weight = request.query_params.get('maxWeight')
     
     # Start with all tasks
     tasks = FeedingTask.objects.all()
