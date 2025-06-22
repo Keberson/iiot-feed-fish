@@ -1,11 +1,7 @@
+import type { IconProps } from "#assets/interface";
 import React from "react";
 
-interface SystemProps {
-    fill?: string;
-    size?: string;
-}
-
-const System: React.FC<SystemProps> = ({ fill = "#FFF", size = "32px" }) => {
+const System: React.FC<IconProps> = ({ fill = "#FFF", size = "32px" }) => {
     return (
         <svg
             width={size}

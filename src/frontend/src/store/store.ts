@@ -15,6 +15,7 @@ import storage from "redux-persist/lib/storage";
 import { authApi } from "#services/auth";
 import { feedingApi } from "#services/feeding";
 import { logsApi } from "#services/logs";
+import { systemApi } from "#services/system";
 
 import authSlice from "./auth.slice";
 
@@ -28,6 +29,7 @@ const rootReducer = combineReducers({
     [authApi.reducerPath]: authApi.reducer,
     [feedingApi.reducerPath]: feedingApi.reducer,
     [logsApi.reducerPath]: logsApi.reducer,
+    [systemApi.reducerPath]: systemApi.reducer,
     auth: authSlice.reducer,
 });
 
@@ -40,7 +42,12 @@ export const store = configureStore({
             serializableCheck: {
                 ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
             },
-        }).concat(authApi.middleware, feedingApi.middleware, logsApi.middleware),
+        }).concat(
+            authApi.middleware,
+            feedingApi.middleware,
+            logsApi.middleware,
+            systemApi.middleware
+        ),
 });
 
 setupListeners(store.dispatch);
