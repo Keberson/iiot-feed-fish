@@ -1,5 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+import { prepareHeaders } from "#core/functions/prepareHeaders/prepareHeader";
+
 import type {
     IFeedingCreateEditRequest,
     IFeedingFilter,
@@ -8,20 +10,14 @@ import type {
     IFeedingList,
 } from "#types/feeding.types";
 
-import type { AuthState } from "#store/auth.slice";
 import type { IOptionalPaginationRequest } from "#types/api.types";
 
 export const feedingApi = createApi({
     reducerPath: "feedingApi",
     tagTypes: ["FeedingItem"],
     baseQuery: fetchBaseQuery({
-        baseUrl: `${import.meta.env.VITE_API_BASE_URL || "http://localhost:4000/api"}/feeding`,
-        prepareHeaders: (headers: Headers, { getState }: { getState: () => unknown }) => {
-            headers.set(
-                "Authorization",
-                `Bearer ${(getState() as { auth: AuthState }).auth.session?.token}`
-            );
-        },
+        baseUrl: `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api"}/feeding`,
+        prepareHeaders,
     }),
     endpoints: (builder) => ({
         getFeedingFormData: builder.query<IFeedingFormDataResponse, void>({
@@ -38,12 +34,8 @@ export const feedingApi = createApi({
             query: (params) => ({
                 url: "",
                 params: {
-                    current: params?.pagination?.current,
-                    itemsPerPage: params?.pagination?.itemsPerPage,
-                    feed: params?.filter?.feed,
-                    pool: params?.filter?.pool,
-                    "min-weight": params?.filter?.minWeight,
-                    "max-weight": params?.filter?.maxWeight,
+                    ...params?.filter,
+                    ...params?.pagination,
                 },
             }),
             providesTags: (result) => [

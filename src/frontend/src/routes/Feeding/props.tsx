@@ -72,6 +72,7 @@ export const filterSchema = (formData?: IFeedingFormDataResponse): IFormRenderIt
         label: "Бассейн",
         options: formData?.pool.map((item) => ({ value: item.id, label: item.name })) || [],
         allowClear: true,
+        placeholder: "Выберите бассейн",
     },
     {
         type: "select",
@@ -79,6 +80,7 @@ export const filterSchema = (formData?: IFeedingFormDataResponse): IFormRenderIt
         label: "Корм",
         options: formData?.feed.map((item) => ({ value: item.id, label: item.name })) || [],
         allowClear: true,
+        placeholder: "Выберите корм",
     },
     {
         type: "slider",

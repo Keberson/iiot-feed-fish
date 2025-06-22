@@ -56,6 +56,12 @@ export interface IFeedingList extends IPaginationResponse {
     data: IFeedingItem[];
 }
 
+export interface IFeedingFilterRaw {
+    pool?: string;
+    feed?: string;
+    weight?: [number, number];
+}
+
 export interface IFeedingFilter {
     pool?: string;
     feed?: string;

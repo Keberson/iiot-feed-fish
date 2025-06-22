@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router";
 import { Divider, Flex, Layout, Menu, Typography } from "antd";
 import Sider from "antd/es/layout/Sider";
@@ -14,6 +14,7 @@ import useAppSelector from "#core/hooks/useStore/useAppSelector";
 import { setSession } from "#store/auth.slice";
 import useAppDispatch from "#core/hooks/useStore/useAppDispatch";
 import type { IBaseErrorResponse } from "#types/api.types";
+import LoadingContext from "#core/contexts/LoadingContext";
 
 const { Title } = Typography;
 
@@ -25,17 +26,17 @@ const DashboardRootLayout = () => {
     const [collapsed, setCollapsed] = useState(false);
     const [checkTokenApi, options] = useCheckTokenMutation();
     const session = useAppSelector((state) => state.auth.session);
+    const { stop } = useContext(LoadingContext);
 
     useRTKEffects(options, "DASHBOARD_CHECK_TOKEN");
 
     useEffect(() => {
-        checkTokenApi({ token: session?.token || "" })
-            .then((result) => {
-                if (result.error && (result.error as IBaseErrorResponse).status === 401) {
-                    dispatch(setSession(null));
-                }
-            })
-            .catch(() => dispatch(setSession(null)));
+        checkTokenApi({ token: session?.token || "" }).then((result) => {
+            if (result.error && (result.error as IBaseErrorResponse).status === 401) {
+                stop("DASHBOARD_CHECK_TOKEN");
+                dispatch(setSession(null));
+            }
+        });
     }, [pathname]);
 
     return (
