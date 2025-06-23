@@ -12,7 +12,7 @@ import useAppDispatch from "#core/hooks/useStore/useAppDispatch";
 
 import { useCheckTokenMutation } from "#services/auth";
 
-import { setIsCorrectSession, setSession } from "#store/auth.slice";
+import { setSession } from "#store/auth.slice";
 
 import type { IBaseErrorResponse } from "#types/api.types";
 
@@ -25,6 +25,7 @@ const { Title } = Typography;
 const DashboardRootLayout = () => {
     const PREFIX = "dashboard";
 
+    const [isCorrect, setIsCorrect] = useState<boolean>(false);
     const dispatch = useAppDispatch();
     const { pathname } = useLocation();
     const [collapsed, setCollapsed] = useState(false);
@@ -35,16 +36,14 @@ const DashboardRootLayout = () => {
     useRTKEffects(options, "DASHBOARD_CHECK_TOKEN");
 
     useEffect(() => {
-        dispatch(setIsCorrectSession(false));
-    }, []);
+        setIsCorrect(false);
 
-    useEffect(() => {
         checkTokenApi({ token: session?.token || "" }).then((result) => {
             if (result.error && (result.error as IBaseErrorResponse).status === 401) {
                 stopAll();
                 dispatch(setSession(null));
-            } else {
-                setIsCorrectSession(true);
+            } else if (result.error === undefined) {
+                setIsCorrect(true);
             }
         });
     }, [pathname]);
@@ -68,7 +67,7 @@ const DashboardRootLayout = () => {
             </Sider>
             <Layout className="content-wrapper">
                 <Flex vertical className="content">
-                    <Outlet />
+                    {isCorrect && <Outlet />}
                 </Flex>
             </Layout>
         </Layout>

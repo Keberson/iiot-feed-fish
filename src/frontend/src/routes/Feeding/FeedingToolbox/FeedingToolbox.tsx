@@ -3,6 +3,7 @@ import { Button, Flex } from "antd";
 import { useForm } from "antd/es/form/Form";
 
 import ModalContext from "#core/contexts/ModalContext";
+import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
 
 import FormRender from "#common/FormRender/FormRender";
 
@@ -12,7 +13,6 @@ import FeedingModalFooter from "./FeedingModalFooter/FeedingModalFooter";
 import { createSchema } from "./props";
 
 import "./FeedingToolbox.css";
-import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
 
 const FeedingToolbox = () => {
     const { open, close } = useContext(ModalContext);

@@ -1,6 +1,5 @@
 import { Divider, Flex, Typography } from "antd";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { skipToken } from "@reduxjs/toolkit/query";
 
 import type { IFeedingTableItem } from "#types/feeding.types";
 
@@ -24,28 +23,23 @@ const General = () => {
     const [pagination, setPagination] = useState<[number, number]>([1, 10]);
     const username = useAppSelector((state) => state.auth.session?.name);
     const [status, setStatus] = useState<{ icon: ReactNode; label: string }>();
-    const isCorrectSession = useAppSelector((state) => state.auth.isCorrectSession);
     const greeting = getGreetingTitle();
 
     const {
         data: feedingList,
         isLoading: loadingFeedingList,
         error: errorFeedingList,
-    } = useGetFeedingListQuery(
-        !isCorrectSession
-            ? {
-                  pagination: {
-                      current: pagination[0],
-                      itemsPerPage: pagination[1],
-                  },
-              }
-            : skipToken
-    );
+    } = useGetFeedingListQuery({
+        pagination: {
+            current: pagination[0],
+            itemsPerPage: pagination[1],
+        },
+    });
     const {
         data: systemStatus,
         isLoading: loadingSystemStatus,
         error: errorSystemStatus,
-    } = useGetSystemStatusQuery(!isCorrectSession ? undefined : skipToken);
+    } = useGetSystemStatusQuery();
 
     useRTKEffects(
         { isLoading: loadingFeedingList, error: errorFeedingList },

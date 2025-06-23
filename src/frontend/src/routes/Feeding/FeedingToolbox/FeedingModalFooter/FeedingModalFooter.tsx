@@ -1,12 +1,10 @@
 import type React from "react";
-import { useContext } from "react";
 import { Button, Flex, type FormInstance } from "antd";
 import type { Dayjs } from "dayjs";
 
 import { useCreateFeedingMutation } from "#services/feeding";
 
 import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
-import MessageContext from "#core/contexts/MessageContext";
 
 import type { IFeedingCreateEditRequest } from "#types/feeding.types";
 
@@ -18,7 +16,6 @@ interface FeedingModalFooterProps {
 }
 
 const FeedingModalFooter: React.FC<FeedingModalFooterProps> = ({ onCancel, form }) => {
-    const { messageApi } = useContext(MessageContext);
     const [createFeedingApi, options] = useCreateFeedingMutation();
 
     useRTKEffects(options, "CREATE_FEEDING", "UPDATE", "Успешно создано");
@@ -39,7 +36,6 @@ const FeedingModalFooter: React.FC<FeedingModalFooterProps> = ({ onCancel, form 
                         ? (formValues?.other_period as Dayjs).format("HH:mm")
                         : undefined,
                 });
-                messageApi?.success("Успешно создано!");
             })
             .catch();
     };

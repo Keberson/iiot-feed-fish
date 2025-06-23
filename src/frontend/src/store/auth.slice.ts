@@ -4,12 +4,10 @@ import type { ISession } from "#types/auth.types";
 
 export interface AuthState {
     session: ISession | null;
-    isCorrectSession: boolean;
 }
 
 const initialState: AuthState = {
     session: null,
-    isCorrectSession: false,
 };
 
 const authSlice = createSlice({
@@ -19,12 +17,9 @@ const authSlice = createSlice({
         setSession: (state, action: PayloadAction<ISession | null>) => {
             state.session = action.payload;
         },
-        setIsCorrectSession: (state, action: PayloadAction<boolean>) => {
-            state.isCorrectSession = action.payload;
-        },
     },
 });
 
-export const { setSession, setIsCorrectSession } = authSlice.actions;
+export const { setSession } = authSlice.actions;
 
 export default authSlice;

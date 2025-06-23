@@ -1,11 +1,9 @@
 import { useRef, useState } from "react";
 import { Typography } from "antd";
-import { skipToken } from "@reduxjs/toolkit/query";
 
 import DynamicTable from "#common/DynamicTable/DynamicTable";
 
 import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
-import useAppSelector from "#core/hooks/useStore/useAppSelector";
 
 import type { ILogFilter, ILogTableItem } from "#types/log.types";
 
@@ -21,15 +19,10 @@ const Logs = () => {
     const [pagination, setPagination] = useState<[number, number]>([1, 10]);
     const [filter, setFilter] = useState<ILogFilter>();
     const titleRef = useRef<HTMLElement>(null);
-    const isCorrectSession = useAppSelector((state) => state.auth.isCorrectSession);
-    const { data, isLoading, error } = useGetLogsListQuery(
-        !isCorrectSession
-            ? {
-                  pagination: { current: pagination[0], itemsPerPage: pagination[1] },
-                  filter,
-              }
-            : skipToken
-    );
+    const { data, isLoading, error } = useGetLogsListQuery({
+        pagination: { current: pagination[0], itemsPerPage: pagination[1] },
+        filter,
+    });
 
     useRTKEffects({ isLoading, error }, "LOG_LIST");
 

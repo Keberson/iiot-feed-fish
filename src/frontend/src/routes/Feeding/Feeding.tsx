@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import { Flex, Typography } from "antd";
-import { skipToken } from "@reduxjs/toolkit/query";
 
 import {
     useDeleteFeedingByIdMutation,
@@ -10,7 +9,6 @@ import {
 } from "#services/feeding";
 
 import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
-import useAppSelector from "#core/hooks/useStore/useAppSelector";
 
 import DynamicTable from "#common/DynamicTable/DynamicTable";
 
@@ -43,14 +41,13 @@ const Feeding = () => {
             maxWeight: filter?.weight ? filter?.weight[1] : undefined,
         },
     });
-    const isCorrectSession = useAppSelector((state) => state.auth.isCorrectSession);
 
     const [deleteFeeding, optionsDelete] = useDeleteFeedingByIdMutation();
     const {
         data: formData,
         isLoading: isLoadingFormData,
         error: errorFormData,
-    } = useGetFeedingFormDataQuery(!isCorrectSession ? undefined : skipToken);
+    } = useGetFeedingFormDataQuery();
     const [patchFeeding, optionsPatch] = usePatchFeedingByIdMutation();
 
     useRTKEffects({ isLoading: isLoadingList, error: errorList }, "GET_FEEDING");

@@ -14,7 +14,7 @@ import type { IOptionalPaginationRequest } from "#types/api.types";
 
 export const feedingApi = createApi({
     reducerPath: "feedingApi",
-    tagTypes: ["FeedingItem"],
+    tagTypes: ["FeedingItem", "Logs"],
     baseQuery: fetchBaseQuery({
         baseUrl: `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api"}/feeding`,
         prepareHeaders,
@@ -25,7 +25,7 @@ export const feedingApi = createApi({
         }),
         createFeeding: builder.mutation<IFeedingItem, IFeedingCreateEditRequest>({
             query: (body) => ({ url: ``, method: "POST", body }),
-            invalidatesTags: [{ type: "FeedingItem", id: "PARTIAL-LIST" }],
+            invalidatesTags: [{ type: "FeedingItem", id: "PARTIAL-LIST" }, "Logs"],
         }),
         getFeedingList: builder.query<
             IFeedingList,
@@ -55,6 +55,7 @@ export const feedingApi = createApi({
             invalidatesTags: (_, __, id) => [
                 { type: "FeedingItem", id },
                 { type: "FeedingItem", id: "PARTIAL-LIST" },
+                "Logs",
             ],
         }),
         editFeedingById: builder.mutation<
@@ -65,6 +66,7 @@ export const feedingApi = createApi({
             invalidatesTags: (_, __, item) => [
                 { type: "FeedingItem", id: item.id },
                 { type: "FeedingItem", id: "PARTIAL-LIST" },
+                "Logs",
             ],
         }),
         patchFeedingById: builder.mutation<
@@ -75,6 +77,7 @@ export const feedingApi = createApi({
             invalidatesTags: (_, __, item) => [
                 { type: "FeedingItem", id: item.id },
                 { type: "FeedingItem", id: "PARTIAL-LIST" },
+                "Logs",
             ],
         }),
         downloadCsv: builder.query<void, IFeedingFilter | undefined>({

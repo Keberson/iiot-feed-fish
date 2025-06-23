@@ -1,12 +1,10 @@
 import { Button, Divider, Flex, Typography } from "antd";
 import { useForm, useWatch } from "antd/es/form/Form";
 import { useEffect, useState } from "react";
-import { skipToken } from "@reduxjs/toolkit/query";
 
 import FormRender from "#common/FormRender/FormRender";
 
 import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
-import useAppSelector from "#core/hooks/useStore/useAppSelector";
 
 import { useGetSystemSettingsQuery, useUpdateSystemSettingsMutation } from "#services/system";
 
@@ -23,11 +21,7 @@ const Settings = () => {
     const [isChangedData, setIsChangedData] = useState<boolean>(false);
     const [form] = useForm<ISystemSettingsForm>();
     const values = useWatch([], form);
-
-    const isCorrectSession = useAppSelector((state) => state.auth.isCorrectSession);
-    const { data, isLoading, error, status } = useGetSystemSettingsQuery(
-        !isCorrectSession ? undefined : skipToken
-    );
+    const { data, isLoading, error, status } = useGetSystemSettingsQuery();
     const [updateSettings, options] = useUpdateSystemSettingsMutation();
 
     useRTKEffects({ isLoading, error, status }, "GET_SETTINGS");

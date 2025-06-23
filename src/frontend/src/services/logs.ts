@@ -7,7 +7,7 @@ import type { ILogFilter, ILogList, ILogTable } from "#types/log.types";
 
 export const logsApi = createApi({
     reducerPath: "logsApi",
-    tagTypes: ["LogItem"],
+    tagTypes: ["Logs"],
     baseQuery: fetchBaseQuery({
         baseUrl: `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api"}/logs`,
         prepareHeaders,
@@ -34,10 +34,10 @@ export const logsApi = createApi({
             }),
             providesTags: (result) => [
                 ...(result?.data || []).map(({ id }) => ({
-                    type: "LogItem" as const,
+                    type: "Logs" as const,
                     id,
                 })),
-                { type: "LogItem", id: "PARTIAL-LIST" },
+                { type: "Logs", id: "PARTIAL-LIST" },
             ],
             transformResponse: (response: ILogList) => ({
                 ...response,
