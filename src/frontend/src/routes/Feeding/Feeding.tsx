@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Flex, Typography } from "antd";
 
 import {
@@ -24,7 +24,6 @@ const { Title } = Typography;
 const Feeding = () => {
     const [pagination, setPagination] = useState<[number, number]>([1, 10]);
     const [filter, setFilter] = useState<IFeedingFilterRaw>();
-    const titleRef = useRef<HTMLElement>(null);
     const {
         data: feedingList,
         isLoading: isLoadingList,
@@ -81,7 +80,7 @@ const Feeding = () => {
 
     return (
         <>
-            <Flex ref={titleRef}>
+            <Flex>
                 <Title level={3}>Управление кормлением</Title>
             </Flex>
             <DynamicTable<IFeedingItem, IFeedingFilterRaw>
@@ -90,7 +89,6 @@ const Feeding = () => {
                 pagination={feedingList}
                 paginationState={[pagination, setPagination]}
                 exported={filterSchema(formData)}
-                topRef={titleRef}
                 columns={columns(deleteFeeding, formData)}
                 data={feedingList?.data || []}
                 rowKey="uuid"

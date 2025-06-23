@@ -1,9 +1,19 @@
 .dynamic-table-wrapper {
     flex-grow: 1;
     justify-content: space-between !important;
+    min-height: 0;
+    gap: 20px;
 }
 
 .dynamic-table-top-part {
     gap: 20px;
     flex-grow: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.ant-table-thead > tr > th {
+    position: sticky !important;
+    top: 0;
+    z-index: 1;
 }

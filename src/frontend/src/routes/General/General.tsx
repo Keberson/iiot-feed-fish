@@ -1,5 +1,5 @@
 import { Divider, Flex, Typography } from "antd";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import type { IFeedingTableItem } from "#types/feeding.types";
 
@@ -19,7 +19,6 @@ import "./General.css";
 const { Title } = Typography;
 
 const General = () => {
-    const titleRef = useRef<HTMLElement>(null);
     const [pagination, setPagination] = useState<[number, number]>([1, 10]);
     const username = useAppSelector((state) => state.auth.session?.name);
     const [status, setStatus] = useState<{ icon: ReactNode; label: string }>();
@@ -75,13 +74,10 @@ const General = () => {
 
             <Flex className="general-layout">
                 <Flex vertical className="general-feeding">
-                    <Title ref={titleRef} level={4}>
-                        Запланированное кормление
-                    </Title>
+                    <Title level={4}>Запланированное кормление</Title>
                     <DynamicTable<IFeedingTableItem>
                         pagination={feedingList}
                         paginationState={[pagination, setPagination]}
-                        topRef={titleRef}
                         columns={columns}
                         data={(feedingList?.data || []).map((item) => ({
                             id: item.uuid,
