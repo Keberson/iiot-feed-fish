@@ -63,7 +63,7 @@ services:
             db:
                 condition: service_healthy
         expose:
-            - $BACK_PORT
+            - $BACK_PORT:$BACK_PORT
         networks:
             - iot-network
 
