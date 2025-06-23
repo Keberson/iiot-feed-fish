@@ -12,9 +12,11 @@ import type {
 
 import type { IOptionalPaginationRequest } from "#types/api.types";
 
+import { logsApi } from "./logs";
+
 export const feedingApi = createApi({
-    reducerPath: "feedingApi",
-    tagTypes: ["FeedingItem", "Logs"],
+    reducerPath: "feedingLogApi",
+    tagTypes: ["FeedingItem"],
     baseQuery: fetchBaseQuery({
         baseUrl: `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api"}/feeding`,
         prepareHeaders,
@@ -25,7 +27,11 @@ export const feedingApi = createApi({
         }),
         createFeeding: builder.mutation<IFeedingItem, IFeedingCreateEditRequest>({
             query: (body) => ({ url: ``, method: "POST", body }),
-            invalidatesTags: [{ type: "FeedingItem", id: "PARTIAL-LIST" }, "Logs"],
+            invalidatesTags: [{ type: "FeedingItem", id: "PARTIAL-LIST" }],
+            async onQueryStarted(_, { dispatch, queryFulfilled }) {
+                await queryFulfilled;
+                dispatch(logsApi.util.invalidateTags(["Logs"]));
+            },
         }),
         getFeedingList: builder.query<
             IFeedingList,
@@ -55,8 +61,11 @@ export const feedingApi = createApi({
             invalidatesTags: (_, __, id) => [
                 { type: "FeedingItem", id },
                 { type: "FeedingItem", id: "PARTIAL-LIST" },
-                "Logs",
             ],
+            async onQueryStarted(_, { dispatch, queryFulfilled }) {
+                await queryFulfilled;
+                dispatch(logsApi.util.invalidateTags(["Logs"]));
+            },
         }),
         editFeedingById: builder.mutation<
             IFeedingItem,
@@ -66,8 +75,11 @@ export const feedingApi = createApi({
             invalidatesTags: (_, __, item) => [
                 { type: "FeedingItem", id: item.id },
                 { type: "FeedingItem", id: "PARTIAL-LIST" },
-                "Logs",
             ],
+            async onQueryStarted(_, { dispatch, queryFulfilled }) {
+                await queryFulfilled;
+                dispatch(logsApi.util.invalidateTags(["Logs"]));
+            },
         }),
         patchFeedingById: builder.mutation<
             IFeedingItem,
@@ -77,8 +89,11 @@ export const feedingApi = createApi({
             invalidatesTags: (_, __, item) => [
                 { type: "FeedingItem", id: item.id },
                 { type: "FeedingItem", id: "PARTIAL-LIST" },
-                "Logs",
             ],
+            async onQueryStarted(_, { dispatch, queryFulfilled }) {
+                await queryFulfilled;
+                dispatch(logsApi.util.invalidateTags(["Logs"]));
+            },
         }),
         downloadCsv: builder.query<void, IFeedingFilter | undefined>({
             query: (filter) => ({

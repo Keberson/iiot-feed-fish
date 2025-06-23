@@ -4,9 +4,11 @@ import { prepareHeaders } from "#core/functions/prepareHeaders/prepareHeader";
 
 import type { ISystemSettings, ISystemSettingsForm, ISystemStatus } from "#types/system.type";
 
+import { logsApi } from "./logs";
+
 export const systemApi = createApi({
     reducerPath: "systemApi",
-    tagTypes: ["Settings", "Logs"],
+    tagTypes: ["Settings"],
     baseQuery: fetchBaseQuery({
         baseUrl: `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api"}/system`,
         prepareHeaders,
@@ -28,7 +30,11 @@ export const systemApi = createApi({
                     wifi_password: body.wifiPassword,
                 },
             }),
-            invalidatesTags: ["Settings", "Logs"],
+            invalidatesTags: ["Settings"],
+            async onQueryStarted(_, { dispatch, queryFulfilled }) {
+                await queryFulfilled;
+                dispatch(logsApi.util.invalidateTags(["Logs"]));
+            },
         }),
     }),
 });
