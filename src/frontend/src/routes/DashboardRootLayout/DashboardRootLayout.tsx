@@ -5,16 +5,20 @@ import Sider from "antd/es/layout/Sider";
 
 import Fish from "#assets/Fish/Fish";
 
+import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
+import useAppSelector from "#core/hooks/useStore/useAppSelector";
+import LoadingContext from "#core/contexts/LoadingContext";
+import useAppDispatch from "#core/hooks/useStore/useAppDispatch";
+
+import { useCheckTokenMutation } from "#services/auth";
+
+import { setIsCorrectSession, setSession } from "#store/auth.slice";
+
+import type { IBaseErrorResponse } from "#types/api.types";
+
 import { items } from "./props";
 
 import "./DashboardRootLayout.css";
-import { useCheckTokenMutation } from "#services/auth";
-import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
-import useAppSelector from "#core/hooks/useStore/useAppSelector";
-import { setSession } from "#store/auth.slice";
-import useAppDispatch from "#core/hooks/useStore/useAppDispatch";
-import type { IBaseErrorResponse } from "#types/api.types";
-import LoadingContext from "#core/contexts/LoadingContext";
 
 const { Title } = Typography;
 
@@ -31,10 +35,16 @@ const DashboardRootLayout = () => {
     useRTKEffects(options, "DASHBOARD_CHECK_TOKEN");
 
     useEffect(() => {
+        dispatch(setIsCorrectSession(false));
+    }, []);
+
+    useEffect(() => {
         checkTokenApi({ token: session?.token || "" }).then((result) => {
             if (result.error && (result.error as IBaseErrorResponse).status === 401) {
                 stopAll();
                 dispatch(setSession(null));
+            } else {
+                setIsCorrectSession(true);
             }
         });
     }, [pathname]);

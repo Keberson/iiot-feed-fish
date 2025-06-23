@@ -72,7 +72,7 @@ export const statusToView = (value?: SystemStatus) => {
         case "error":
             return { label: "Ошибка", icon: <CloseCircleTwoTone twoToneColor="#ff0000" /> };
         case "ok":
-            return { label: "Работает", icon: <CheckCircleTwoTone twoToneColor="#55ff00" /> };
+            return { label: "Работает", icon: <CheckCircleTwoTone twoToneColor="#319200" /> };
         default:
             return { label: "", icon: <LoadingOutlined /> };
     }
