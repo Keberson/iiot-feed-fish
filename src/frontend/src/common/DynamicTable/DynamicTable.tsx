@@ -15,28 +15,10 @@ import DynamicTableToolbox from "./DynamicTableToolbox/DynamicTableToolbox";
 import type { DynamicTableColumnType } from "./types";
 
 import "./DynamicTable.css";
-interface DynamicTableProps<T> {
+
+interface DynamicTableProps<T, F = undefined> {
     filter?: IFormRenderItem[];
-    filterState?: [
-        (
-            | {
-                  pool: string;
-                  feed: string;
-                  weight: [number, number];
-              }
-            | undefined
-        ),
-        React.Dispatch<
-            React.SetStateAction<
-                | {
-                      pool: string;
-                      feed: string;
-                      weight: [number, number];
-                  }
-                | undefined
-            >
-        >
-    ];
+    filterState?: [F | undefined, React.Dispatch<React.SetStateAction<F | undefined>>];
 
     pagination?: IPaginationResponse;
     paginationState?: [[number, number], React.Dispatch<React.SetStateAction<[number, number]>>];
@@ -55,7 +37,7 @@ interface DynamicTableProps<T> {
     handleUpdateItem?: (partialItem: unknown, item: T) => void;
 }
 
-const DynamicTable = <T,>({
+const DynamicTable = <T, F = undefined>({
     filter,
     filterState,
 
@@ -73,7 +55,7 @@ const DynamicTable = <T,>({
     rowKey,
     toolbox,
     handleUpdateItem,
-}: DynamicTableProps<T>): React.ReactElement => {
+}: DynamicTableProps<T, F>): React.ReactElement => {
     const { ref, height } = useResizable();
     const toolboxRef = useRef<HTMLElement>(null);
 
@@ -81,7 +63,7 @@ const DynamicTable = <T,>({
         <Flex ref={ref} vertical className="dynamic-table-wrapper">
             <Flex vertical className="dynamic-table-top-part">
                 {filter && filterState && (
-                    <DynamicTableToolbox
+                    <DynamicTableToolbox<F>
                         filter={filter}
                         filterState={filterState}
                         panel={toolbox}

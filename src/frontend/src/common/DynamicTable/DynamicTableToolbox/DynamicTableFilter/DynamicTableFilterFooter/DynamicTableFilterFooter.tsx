@@ -3,35 +3,17 @@ import type React from "react";
 
 import "./DynamicTableFilterFooter.css";
 
-interface DynamicTableFilterFooterProps {
+interface DynamicTableFilterFooterProps<F = undefined> {
     form: FormInstance;
-    filterState: [
-        (
-            | {
-                  pool: string;
-                  feed: string;
-                  weight: [number, number];
-              }
-            | undefined
-        ),
-        React.Dispatch<
-            React.SetStateAction<
-                | {
-                      pool: string;
-                      feed: string;
-                      weight: [number, number];
-                  }
-                | undefined
-            >
-        >
-    ];
+    filterState: [F | undefined, React.Dispatch<React.SetStateAction<F | undefined>>];
 }
 
-const DynamicTableFilterFooter: React.FC<DynamicTableFilterFooterProps> = ({
+const DynamicTableFilterFooter = <F = undefined,>({
     form,
     filterState,
-}) => {
+}: DynamicTableFilterFooterProps<F>): React.ReactElement => {
     const onSave = () => {
+        console.log(form.getFieldsValue());
         filterState[1](form.getFieldsValue());
     };
 

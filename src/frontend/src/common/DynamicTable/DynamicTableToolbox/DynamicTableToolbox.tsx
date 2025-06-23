@@ -9,51 +9,32 @@ import DynamicTableExport from "./DynamicTableExport/DynamicTableExport";
 
 import "./DynamicTableToolbox.css";
 
-interface ToolboxProps {
+interface ToolboxProps<F = undefined> {
     ref?: React.Ref<HTMLElement>;
     filter?: IFormRenderItem[];
-    filterState?: [
-        (
-            | {
-                  pool: string;
-                  feed: string;
-                  weight: [number, number];
-              }
-            | undefined
-        ),
-        React.Dispatch<
-            React.SetStateAction<
-                | {
-                      pool: string;
-                      feed: string;
-                      weight: [number, number];
-                  }
-                | undefined
-            >
-        >
-    ];
+    filterState?: [F | undefined, React.Dispatch<React.SetStateAction<F | undefined>>];
     searchable?: boolean;
     exported?: IFormRenderItem[];
     panel?: React.ReactNode;
 }
 
-const DynamicTableToolbox: React.FC<ToolboxProps> = ({
+const DynamicTableToolbox = <F = undefined,>({
     ref,
     filter,
     filterState,
     searchable,
     exported,
     panel,
-}) => {
+}: ToolboxProps<F>): React.ReactElement => {
     return (
         <Flex ref={ref} className="dynamic-table-toolbox-panel">
             {panel && panel}
             <Flex className="dynamic-table-toolbox">
-                {filter && filterState && <DynamicTableFilter schema={filter} filterState={filterState} />}
-                {searchable && <DynamicTableSearch />}
-                {exported && (
-                    <DynamicTableExport schema={exported} />
+                {filter && filterState && (
+                    <DynamicTableFilter schema={filter} filterState={filterState} />
                 )}
+                {searchable && <DynamicTableSearch />}
+                {exported && <DynamicTableExport schema={exported} />}
             </Flex>
         </Flex>
     );

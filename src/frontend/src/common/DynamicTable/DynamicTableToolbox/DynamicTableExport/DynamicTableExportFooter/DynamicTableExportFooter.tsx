@@ -13,7 +13,7 @@ interface DynamicTableExportFooterProps {
 const DynamicTableExportFooter: React.FC<DynamicTableExportFooterProps> = ({ form }) => {
     const [download, options] = useLazyDownloadCsvQuery();
 
-    useRTKEffects(options, "DOWNLOAD_FEEDING");
+    useRTKEffects(options, "DOWNLOAD_FEEDING", "UPDATE", "Успешно экспортировано");
 
     const onClick = () => {
         const { weight, ...otherData } = form.getFieldsValue();

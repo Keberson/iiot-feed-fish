@@ -1,6 +1,6 @@
-import { Button, Drawer } from "antd";
+import { Button } from "antd";
 import { useForm } from "antd/es/form/Form";
-import { useContext } from "react";
+import React, { useContext } from "react";
 
 import SidenavContext from "#core/contexts/SidenavContext";
 
@@ -11,31 +11,15 @@ import DynamicTableFilterFooter from "./DynamicTableFilterFooter/DynamicTableFil
 
 import "./DynamicTableFilter.css";
 
-interface DynamicTableFilterProps {
+interface DynamicTableFilterProps<F = undefined> {
     schema: IFormRenderItem[];
-    filterState: [
-        (
-            | {
-                  pool: string;
-                  feed: string;
-                  weight: [number, number];
-              }
-            | undefined
-        ),
-        React.Dispatch<
-            React.SetStateAction<
-                | {
-                      pool: string;
-                      feed: string;
-                      weight: [number, number];
-                  }
-                | undefined
-            >
-        >
-    ];
+    filterState: [F | undefined, React.Dispatch<React.SetStateAction<F | undefined>>];
 }
 
-const DynamicTableFilter: React.FC<DynamicTableFilterProps> = ({ schema, filterState }) => {
+const DynamicTableFilter = <F = undefined,>({
+    schema,
+    filterState,
+}: DynamicTableFilterProps<F>): React.ReactElement => {
     const { open, close } = useContext(SidenavContext);
     const [form] = useForm();
 
@@ -45,17 +29,12 @@ const DynamicTableFilter: React.FC<DynamicTableFilterProps> = ({ schema, filterS
             props: {
                 title: "Фильтрация",
                 onClose: () => close(),
-                footer: <DynamicTableFilterFooter form={form} filterState={filterState} />,
+                footer: <DynamicTableFilterFooter<F> form={form} filterState={filterState} />,
             },
         });
     };
 
-    return (
-        <>
-            <Button onClick={openFilter}>Фильтр</Button>
-            <Drawer></Drawer>
-        </>
-    );
+    return <Button onClick={openFilter}>Фильтр</Button>;
 };
 
 export default DynamicTableFilter;

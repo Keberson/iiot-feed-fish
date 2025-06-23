@@ -13,8 +13,10 @@ import {
 import type { IFormRenderItem } from "./interface";
 
 import FormControlWrapper from "./FormControlWrapper/FormControlWrapper";
+import DatePicker from "./controls/DatePicker/DatePicker";
 
 import "./FormRender.css";
+import DateRange from "./controls/DateRange/DateRange";
 
 const { Title, Text } = Typography;
 
@@ -25,7 +27,7 @@ interface FormRenderProps {
 
 const FormRender: React.FC<FormRenderProps> = ({ schema, form }) => {
     return (
-        <Form form={form} layout="vertical" className="form-wrapper">
+        <Form form={form} layout="vertical" className="form-wrapper" autoComplete="off">
             {schema.map((item) => {
                 if (item.type === "title") {
                     return (
@@ -51,6 +53,7 @@ const FormRender: React.FC<FormRenderProps> = ({ schema, form }) => {
                                 disabled={item.disabled}
                                 placeholder={item.placeholder}
                                 addonBefore={item.addonBefore}
+                                autoComplete="new-password"
                             />
                         )}
                         {item.type === "checkbox" && <Checkbox disabled={item.disabled} />}
@@ -96,6 +99,21 @@ const FormRender: React.FC<FormRenderProps> = ({ schema, form }) => {
                                 minuteStep={30}
                                 use12Hours={false}
                                 className="form-item-timepicker"
+                            />
+                        )}
+                        {item.type === "dateRange" && (
+                            <DateRange
+                                placeholder={item.placeholder}
+                                presets={item.presets}
+                                allowEmpty={item.allowEmpty}
+                                format={item.format}
+                            />
+                        )}
+                        {item.type === "date" && (
+                            <DatePicker
+                                placeholder={item.placeholder}
+                                format={item.format}
+                                presets={item.presets}
                             />
                         )}
                     </FormControlWrapper>

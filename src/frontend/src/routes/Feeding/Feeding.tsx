@@ -12,7 +12,7 @@ import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
 
 import DynamicTable from "#common/DynamicTable/DynamicTable";
 
-import type { IFeedingItem } from "#types/feeding.types";
+import type { IFeedingFilterRaw, IFeedingItem } from "#types/feeding.types";
 
 import FeedingToolbox from "./FeedingToolbox/FeedingToolbox";
 import { columns, filterSchema } from "./props";
@@ -22,12 +22,8 @@ import "./Feeding.css";
 const { Title } = Typography;
 
 const Feeding = () => {
-    const paginationState = useState<[number, number]>([1, 10]);
-    const filterState = useState<{
-        pool: string;
-        feed: string;
-        weight: [number, number];
-    }>();
+    const [pagination, setPagination] = useState<[number, number]>([1, 10]);
+    const [filter, setFilter] = useState<IFeedingFilterRaw>();
     const titleRef = useRef<HTMLElement>(null);
     const {
         data: feedingList,
@@ -35,14 +31,14 @@ const Feeding = () => {
         error: errorList,
     } = useGetFeedingListQuery({
         pagination: {
-            current: paginationState[0][0],
-            itemsPerPage: paginationState[0][1],
+            current: pagination[0],
+            itemsPerPage: pagination[1],
         },
         filter: {
-            pool: filterState[0]?.pool,
-            feed: filterState[0]?.feed,
-            minWeight: filterState[0]?.weight ? filterState[0]?.weight[0] : undefined,
-            maxWeight: filterState[0]?.weight ? filterState[0]?.weight[1] : undefined,
+            pool: filter?.pool,
+            feed: filter?.feed,
+            minWeight: filter?.weight ? filter?.weight[0] : undefined,
+            maxWeight: filter?.weight ? filter?.weight[1] : undefined,
         },
     });
 
@@ -56,8 +52,8 @@ const Feeding = () => {
 
     useRTKEffects({ isLoading: isLoadingList, error: errorList }, "GET_FEEDING");
     useRTKEffects({ isLoading: isLoadingFormData, error: errorFormData }, "GET_FORM-DATA");
-    useRTKEffects(optionsDelete, "DELETE_FEEDING");
-    useRTKEffects(optionsPatch, "PATCH_FEEDING");
+    useRTKEffects(optionsDelete, "DELETE_FEEDING", "UPDATE", "Успешно удалено");
+    useRTKEffects(optionsPatch, "PATCH_FEEDING", "UPDATE", "Успешно обновлено");
 
     const handleUpdateItem = (partialItems: unknown, item: unknown) => {
         const itemCasted = item as IFeedingItem;
@@ -88,11 +84,11 @@ const Feeding = () => {
             <Flex ref={titleRef}>
                 <Title level={3}>Управление кормлением</Title>
             </Flex>
-            <DynamicTable<IFeedingItem>
+            <DynamicTable<IFeedingItem, IFeedingFilterRaw>
                 filter={filterSchema(formData)}
-                filterState={filterState}
+                filterState={[filter, setFilter]}
                 pagination={feedingList}
-                paginationState={paginationState}
+                paginationState={[pagination, setPagination]}
                 exported={filterSchema(formData)}
                 topRef={titleRef}
                 columns={columns(deleteFeeding, formData)}

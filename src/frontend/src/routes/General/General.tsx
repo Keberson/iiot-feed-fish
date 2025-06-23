@@ -1,5 +1,5 @@
 import { Divider, Flex, Typography } from "antd";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import type { IFeedingTableItem } from "#types/feeding.types";
 
@@ -7,10 +7,12 @@ import DynamicTable from "#common/DynamicTable/DynamicTable";
 import ChartRender from "#common/ChartRender/ChartRender/ChartRender";
 
 import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
+import useAppSelector from "#core/hooks/useStore/useAppSelector";
 
 import { useGetFeedingListQuery } from "#services/feeding";
+import { useGetSystemStatusQuery } from "#services/system";
 
-import { columns } from "./props";
+import { columns, getGreetingTitle, statusToView } from "./props";
 
 import "./General.css";
 
@@ -18,32 +20,70 @@ const { Title } = Typography;
 
 const General = () => {
     const titleRef = useRef<HTMLElement>(null);
-    const paginationState = useState<[number, number]>([1, 10]);
+    const [pagination, setPagination] = useState<[number, number]>([1, 10]);
+    const username = useAppSelector((state) => state.auth.session?.name);
+    const [status, setStatus] = useState<{ icon: ReactNode; label: string }>();
+    const greeting = getGreetingTitle();
 
-    const { data, isLoading, error } = useGetFeedingListQuery({
+    const {
+        data: feedingList,
+        isLoading: loadingFeedingList,
+        error: errorFeedingList,
+    } = useGetFeedingListQuery({
         pagination: {
-            current: paginationState[0][0],
-            itemsPerPage: paginationState[0][1],
+            current: pagination[0],
+            itemsPerPage: pagination[1],
         },
     });
+    const {
+        data: systemStatus,
+        isLoading: loadingSystemStatus,
+        error: errorSystemStatus,
+    } = useGetSystemStatusQuery();
 
-    useRTKEffects({ isLoading, error }, "GET_FEEDING_GENERAL");
+    useRTKEffects(
+        { isLoading: loadingFeedingList, error: errorFeedingList },
+        "GET_FEEDING_GENERAL"
+    );
+    useRTKEffects(
+        { isLoading: loadingSystemStatus, error: errorSystemStatus },
+        "GET_SYSTEM_STATUS"
+    );
+
+    useEffect(() => {
+        setStatus(statusToView(systemStatus?.status));
+    }, [systemStatus]);
 
     return (
         <>
-            <Title level={3}>Доброго времени суток!</Title>
+            <Flex className="general-title-wrapper">
+                <Flex className="greeting-wrapper">
+                    {greeting.icon}
+                    <Title level={3} className="title-margin-zero">
+                        {greeting.label}, {username}!
+                    </Title>
+                </Flex>
+
+                <Flex className="status-wrapper">
+                    <Title level={4} className="title-margin-zero">
+                        Статус системы: {status?.icon || ""} {status?.label || ""}
+                    </Title>
+                </Flex>
+            </Flex>
+
             <Divider />
+
             <Flex className="general-layout">
                 <Flex vertical className="general-feeding">
                     <Title ref={titleRef} level={4}>
                         Запланированное кормление
                     </Title>
                     <DynamicTable<IFeedingTableItem>
-                        pagination={data}
-                        paginationState={paginationState}
+                        pagination={feedingList}
+                        paginationState={[pagination, setPagination]}
                         topRef={titleRef}
                         columns={columns}
-                        data={(data?.data || []).map((item) => ({
+                        data={(feedingList?.data || []).map((item) => ({
                             id: item.uuid,
                             pool: item.pool.name,
                             feed: item.feed.name,

@@ -1,4 +1,4 @@
-import type { SliderSingleProps } from "antd";
+import type { DatePickerProps, SliderSingleProps, TimeRangePickerProps } from "antd";
 import type { Rule } from "antd/es/form";
 import type { DefaultOptionType } from "antd/es/select";
 import type { ReactNode } from "react";
@@ -18,7 +18,7 @@ interface IFormRenderDependecies {
 }
 
 interface IFormRenderItemBase {
-    label: string | React.ReactNode;
+    label?: string | React.ReactNode;
     validators?: Rule[];
     initValue?: unknown;
     request?: IFormRenderRequest;
@@ -28,7 +28,7 @@ interface IFormRenderItemBase {
     disabled?: boolean;
 }
 
-interface IFormRenderBase {
+export interface IFormRenderBase {
     name: string;
 }
 
@@ -46,7 +46,7 @@ export interface IFormRenderItemTitle extends IFormRenderBase {
 export interface IFormRenderInput extends IFormRenderItemBase, IFormRenderBase {
     type: "input";
     subtype?: "number" | "text" | "password";
-    initValue?: string;
+    initValue?: string | null;
     placeholder?: string;
     addonBefore?: ReactNode;
 }
@@ -87,6 +87,21 @@ export interface IFormRenderTime extends IFormRenderItemBase, IFormRenderBase {
     placeholder?: string;
 }
 
+export interface IFormRenderDateRange extends IFormRenderItemBase, IFormRenderBase {
+    type: "dateRange";
+    placeholder?: [string, string];
+    presets?: TimeRangePickerProps["presets"];
+    format?: string;
+    allowEmpty?: [boolean, boolean];
+}
+
+export interface IFormRenderDate extends IFormRenderItemBase, IFormRenderBase {
+    type: "date";
+    placeholder?: string;
+    presets?: DatePickerProps["presets"];
+    format?: string;
+}
+
 export type IFormRenderItem =
     | IFormRenderItemText
     | IFormRenderItemTitle
@@ -96,4 +111,6 @@ export type IFormRenderItem =
     | IFormRenderSwitch
     | IFormRenderDivider
     | IFormRenderSlider
-    | IFormRenderTime;
+    | IFormRenderTime
+    | IFormRenderDateRange
+    | IFormRenderDate;

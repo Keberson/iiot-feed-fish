@@ -30,7 +30,7 @@ COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 RUN useradd -m django_user && \
-    mkdir -p /app/migrations && \
+    mkdir -p /app && \
     chown django_user:django_user /app
 
 WORKDIR /app
@@ -38,8 +38,7 @@ USER django_user
 
 COPY --chown=django_user:django_user . .
 
-RUN mkdir -p fish_app/migrations && \
-    touch fish_app/migrations/__init__.py && \
+RUN sed -i 's/\r$//' /app/entrypoint.sh && \
     chmod +x /app/entrypoint.sh
 
-CMD ["/app/entrypoint.sh"]
+ENTRYPOINT ["/app/entrypoint.sh"]
