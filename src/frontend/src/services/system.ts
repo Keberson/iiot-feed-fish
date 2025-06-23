@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import { prepareHeaders } from "#core/functions/prepareHeaders/prepareHeader";
 
-import type { ISystemStatus } from "#types/system.type";
+import type { ISystemSettings, ISystemSettingsForm, ISystemStatus } from "#types/system.type";
 
 export const systemApi = createApi({
     reducerPath: "systemApi",
@@ -15,7 +15,26 @@ export const systemApi = createApi({
         getSystemStatus: builder.query<ISystemStatus, void>({
             query: () => `/status`,
         }),
+        getSystemSettings: builder.query<ISystemSettings, void>({
+            query: () => `/settings`,
+            providesTags: ["Settings"],
+        }),
+        updateSystemSettings: builder.mutation<ISystemSettings, ISystemSettingsForm>({
+            query: (body) => ({
+                url: `/settings`,
+                method: "PUT",
+                body: {
+                    wifi_ssid: body.wifiSsid,
+                    wifi_password: body.wifiPassword,
+                },
+            }),
+            invalidatesTags: ["Settings"],
+        }),
     }),
 });
 
-export const { useGetSystemStatusQuery } = systemApi;
+export const {
+    useGetSystemStatusQuery,
+    useGetSystemSettingsQuery,
+    useUpdateSystemSettingsMutation,
+} = systemApi;

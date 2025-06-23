@@ -46,7 +46,7 @@ export interface IFormRenderItemTitle extends IFormRenderBase {
 export interface IFormRenderInput extends IFormRenderItemBase, IFormRenderBase {
     type: "input";
     subtype?: "number" | "text" | "password";
-    initValue?: string;
+    initValue?: string | null;
     placeholder?: string;
     addonBefore?: ReactNode;
 }

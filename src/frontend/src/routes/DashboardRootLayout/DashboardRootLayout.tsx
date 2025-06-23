@@ -26,14 +26,14 @@ const DashboardRootLayout = () => {
     const [collapsed, setCollapsed] = useState(false);
     const [checkTokenApi, options] = useCheckTokenMutation();
     const session = useAppSelector((state) => state.auth.session);
-    const { stop } = useContext(LoadingContext);
+    const { stopAll } = useContext(LoadingContext);
 
     useRTKEffects(options, "DASHBOARD_CHECK_TOKEN");
 
     useEffect(() => {
         checkTokenApi({ token: session?.token || "" }).then((result) => {
             if (result.error && (result.error as IBaseErrorResponse).status === 401) {
-                stop("DASHBOARD_CHECK_TOKEN");
+                stopAll();
                 dispatch(setSession(null));
             }
         });

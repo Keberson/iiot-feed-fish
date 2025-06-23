@@ -33,6 +33,10 @@ const LoadingWrapper: React.FC<LoadingWrapperProps> = ({ children }) => {
         });
     };
 
+    const stopAll = () => {
+        setLoadingMap({});
+    };
+
     useEffect(() => {
         if (Object.keys(loadingMap).length > 0) {
             setLoading(true);
@@ -42,7 +46,7 @@ const LoadingWrapper: React.FC<LoadingWrapperProps> = ({ children }) => {
     }, [loadingMap]);
 
     return (
-        <LoadingContext.Provider value={{ start, stop }}>
+        <LoadingContext.Provider value={{ start, stop, stopAll }}>
             <Spin fullscreen spinning={loading} rootClassName="spinner" />
             {children}
         </LoadingContext.Provider>

@@ -27,7 +27,7 @@ interface FormRenderProps {
 
 const FormRender: React.FC<FormRenderProps> = ({ schema, form }) => {
     return (
-        <Form form={form} layout="vertical" className="form-wrapper">
+        <Form form={form} layout="vertical" className="form-wrapper" autoComplete="off">
             {schema.map((item) => {
                 if (item.type === "title") {
                     return (
@@ -53,6 +53,7 @@ const FormRender: React.FC<FormRenderProps> = ({ schema, form }) => {
                                 disabled={item.disabled}
                                 placeholder={item.placeholder}
                                 addonBefore={item.addonBefore}
+                                autoComplete="new-password"
                             />
                         )}
                         {item.type === "checkbox" && <Checkbox disabled={item.disabled} />}

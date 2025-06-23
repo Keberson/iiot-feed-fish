@@ -52,8 +52,8 @@ const Feeding = () => {
 
     useRTKEffects({ isLoading: isLoadingList, error: errorList }, "GET_FEEDING");
     useRTKEffects({ isLoading: isLoadingFormData, error: errorFormData }, "GET_FORM-DATA");
-    useRTKEffects(optionsDelete, "DELETE_FEEDING");
-    useRTKEffects(optionsPatch, "PATCH_FEEDING");
+    useRTKEffects(optionsDelete, "DELETE_FEEDING", "UPDATE", "Успешно удалено");
+    useRTKEffects(optionsPatch, "PATCH_FEEDING", "UPDATE", "Успешно обновлено");
 
     const handleUpdateItem = (partialItems: unknown, item: unknown) => {
         const itemCasted = item as IFeedingItem;

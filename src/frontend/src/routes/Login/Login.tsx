@@ -31,7 +31,7 @@ const Login = () => {
     const [apiLogin, loginOptions] = useLoginMutation();
     const [form] = useForm();
 
-    useRTKEffects(loginOptions, LoginAction);
+    useRTKEffects(loginOptions, LoginAction, "UPDATE", "Успешная авторизация");
 
     const onClickForgetPassword = () => {
         messageApi?.open({

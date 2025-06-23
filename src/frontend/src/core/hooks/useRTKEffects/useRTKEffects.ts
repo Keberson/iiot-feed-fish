@@ -1,4 +1,5 @@
 import { useContext, useEffect } from "react";
+import type { QueryStatus } from "@reduxjs/toolkit/query";
 
 import type { IBaseErrorResponse } from "#types/api.types";
 
@@ -11,8 +12,10 @@ const errorMessages: Record<number, string> = {
 };
 
 export const useRTKEffects = (
-    { isLoading, error }: { isLoading?: boolean; error?: unknown },
-    action: string
+    { isLoading, error, status }: { isLoading?: boolean; error?: unknown; status?: QueryStatus },
+    action: string,
+    method: "GET" | "UPDATE" = "GET",
+    successMessage: string = "Успешно выполнено"
 ) => {
     const { start, stop } = useContext(LoadingContext);
     const { messageApi } = useContext(MessageContext);
@@ -26,6 +29,12 @@ export const useRTKEffects = (
             }
         }
     }, [isLoading]);
+
+    useEffect(() => {
+        if (status && status === "fulfilled" && method === "UPDATE") {
+            messageApi?.success(successMessage);
+        }
+    }, [status]);
 
     useEffect(() => {
         if (error) {

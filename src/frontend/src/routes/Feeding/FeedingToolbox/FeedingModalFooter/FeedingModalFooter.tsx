@@ -21,7 +21,7 @@ const FeedingModalFooter: React.FC<FeedingModalFooterProps> = ({ onCancel, form 
     const { messageApi } = useContext(MessageContext);
     const [createFeedingApi, options] = useCreateFeedingMutation();
 
-    useRTKEffects(options, "CREATE_FEEDING");
+    useRTKEffects(options, "CREATE_FEEDING", "UPDATE", "Успешно создано");
 
     const createFeedingApiWrapper = (data: IFeedingCreateEditRequest) => {
         createFeedingApi(data).then(onCancel).catch();
