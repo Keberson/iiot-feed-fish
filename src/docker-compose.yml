@@ -5,7 +5,8 @@ services:
             context: ./frontend
         image: frontend
         container_name: frontend
-        env_file: .env
+        env_file:
+            - .env
         volumes:
             - react-build:/app/dist
         networks:
@@ -16,13 +17,15 @@ services:
             context: ./build-nginx
         image: nginx
         container_name: nginx
+        env_file:
+            - .env
         depends_on:
             - frontend
             - backend
         ports:
             - $NGINX_PORT:$NGINX_PORT
         volumes:
-            - ./build-nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ./build-nginx/default.conf.template:/etc/nginx/templates/default.conf.template
             - react-build:/usr/share/nginx/html
         networks:
             - iot-network
@@ -42,7 +45,7 @@ services:
             interval: 5s
             timeout: 5s
             retries: 5
-        ports:
+        expose:
             - $PG_PORT:5432
         volumes:
             - iot-db:/var/lib/postgresql/data/
@@ -54,15 +57,13 @@ services:
             context: ./backend
         image: backend
         container_name: backend
+        env_file:
+            - .env
         depends_on:
             db:
                 condition: service_healthy
-        env_file:
-            - .env
         expose:
             - $BACK_PORT
-        ports:
-            - $BACK_PORT:$BACK_PORT
         networks:
             - iot-network
 
