@@ -40,13 +40,14 @@ services:
             POSTGRES_USER: $PG_USER
             POSTGRES_PASSWORD: $PG_PASSWORD
             POSTGRES_DB: $PG_DB
+            POSTGRES_POT: $PG_PORT
         healthcheck:
             test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
             interval: 5s
             timeout: 5s
             retries: 5
         expose:
-            - $PG_PORT:5432
+            - $PG_PORT
         volumes:
             - iot-db:/var/lib/postgresql/data/
         networks:
@@ -63,7 +64,7 @@ services:
             db:
                 condition: service_healthy
         expose:
-            - $BACK_PORT:$BACK_PORT
+            - $BACK_PORT
         networks:
             - iot-network
 
