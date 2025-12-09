@@ -6,6 +6,7 @@ import {
     QuestionCircleOutlined,
     ScheduleOutlined,
     SettingOutlined,
+    ExperimentOutlined,
 } from "@ant-design/icons";
 
 import MenuItem from "./MenuItem/MenuItem";
@@ -36,6 +37,11 @@ export const items = (prefix: string): ItemType[] =>
             label: "Настройки",
             url: "settings",
             icon: <SettingOutlined />,
+        },
+        {
+            label: "Тестирование",
+            url: "testing",
+            icon: <ExperimentOutlined />,
         },
         {
             label: "Помощь",

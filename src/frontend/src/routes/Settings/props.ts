@@ -4,14 +4,14 @@ import type { ISystemSettingsForm } from "#types/system.type";
 export const schema = ({ wifiSsid, wifiPassword }: ISystemSettingsForm): IFormRenderItem[] => [
     {
         type: "input",
-        label: "SSID",
+        label: "Wi-Fi SSID",
         name: "wifiSsid",
         initValue: wifiSsid,
     },
     {
         type: "input",
         subtype: "password",
-        label: "Пароль",
+        label: "Wi-Fi Password",
         name: "wifiPassword",
         initValue: wifiPassword,
     },

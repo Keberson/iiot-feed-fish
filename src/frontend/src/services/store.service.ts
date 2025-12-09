@@ -16,6 +16,8 @@ import { authApi } from "#services/api/auth.api";
 import { feedingApi } from "#services/api/feeding.api";
 import { logsApi } from "#services/api/logs.api";
 import { systemApi } from "#services/api/system.api";
+import { cartApi } from "#services/api/cart.api";
+import { testingApi } from "#services/api/testing.api";
 
 import authSlice from "./slices/auth.slice";
 import loadingSlice from "./slices/loading.slice";
@@ -34,6 +36,8 @@ const rootReducer = combineReducers({
     [feedingApi.reducerPath]: feedingApi.reducer,
     [logsApi.reducerPath]: logsApi.reducer,
     [systemApi.reducerPath]: systemApi.reducer,
+    [cartApi.reducerPath]: cartApi.reducer,
+    [testingApi.reducerPath]: testingApi.reducer,
     auth: authSlice.reducer,
     loading: loadingSlice.reducer,
 });
@@ -52,6 +56,8 @@ export const store = configureStore({
             feedingApi.middleware,
             logsApi.middleware,
             systemApi.middleware,
+            cartApi.middleware,
+            testingApi.middleware,
             loadingMiddleware,
             messageMiddleware
         ),

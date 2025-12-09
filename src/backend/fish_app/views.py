@@ -18,6 +18,7 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from .decorators import log_event
 from .utils import create_log_entry, log_arduino_event
+from .models import Log
 
 # Create your views here.
 @swagger_auto_schema(
@@ -745,3 +746,483 @@ def arduino_sensor_data(request):
         return JsonResponse({"status": "error", "message": "Неверный JSON"}, status=400, json_dumps_params={'ensure_ascii': False})
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)}, status=500, json_dumps_params={'ensure_ascii': False}) 
+
+
+@swagger_auto_schema(
+    method='post',
+    operation_description="Отправить команду движения тележки вперед",
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'direction': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description="Направление движения тележки",
+                enum=['forward']
+            ),
+        },
+        required=[],
+    ),
+    responses={
+        200: openapi.Response(
+            description="Команда принята",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'status': openapi.Schema(type=openapi.TYPE_STRING),
+                    'message': openapi.Schema(type=openapi.TYPE_STRING),
+                    'direction': openapi.Schema(type=openapi.TYPE_STRING),
+                }
+            )
+        ),
+        400: "Неверный запрос"
+    }
+)
+@api_view(['POST'])
+@csrf_exempt
+@log_event(log_type='cart', action='move_forward')
+def cart_move_forward(request):
+    """
+    Принимает команду движения тележки вперед и логирует запрос.
+    Пока только возвращает подтверждение, фактическое управление будет через MQTT.
+    """
+    direction = request.data.get('direction', 'forward')
+
+    if direction != 'forward':
+        return Response(
+            {"status": "error", "message": "Поддерживается только направление forward"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    # Явно фиксируем событие в логах для наглядности
+    try:
+        Log.objects.create(
+            action='move_forward',
+            type='cart',
+            description=json.dumps({'direction': direction}, ensure_ascii=False),
+        )
+    except Exception:
+        # Не блокируем ответ при ошибке логирования
+        pass
+
+    return Response(
+        {"status": "success", "message": "Команда движения вперед принята", "direction": direction}
+    )
+
+
+@swagger_auto_schema(
+    method='post',
+    operation_description="Тест шнекового механизма - запуск подачи корма",
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'action': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description="Действие: start или stop",
+                enum=['start', 'stop']
+            ),
+            'weight': openapi.Schema(
+                type=openapi.TYPE_NUMBER,
+                description="Целевая масса корма (кг) - только для start"
+            ),
+        },
+    ),
+    responses={
+        200: openapi.Response(
+            description="Команда принята",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'status': openapi.Schema(type=openapi.TYPE_STRING),
+                    'message': openapi.Schema(type=openapi.TYPE_STRING),
+                }
+            )
+        ),
+        400: "Неверный запрос"
+    }
+)
+@api_view(['POST'])
+@csrf_exempt
+@log_event(log_type='system', action='auger_test')
+def test_auger(request):
+    """
+    Тест шнекового механизма подачи корма
+    """
+    action = request.data.get('action', 'start')
+    weight = request.data.get('weight')
+    
+    if action not in ['start', 'stop']:
+        return Response(
+            {"status": "error", "message": "Действие должно быть start или stop"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    
+    if action == 'start' and weight is None:
+        return Response(
+            {"status": "error", "message": "Для запуска необходимо указать целевую массу"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    
+    try:
+        log_data = {'action': action}
+        if weight:
+            log_data['target_weight'] = weight
+        
+        Log.objects.create(
+            action='auger_test',
+            type='system',
+            description=json.dumps(log_data, ensure_ascii=False),
+        )
+    except Exception:
+        pass
+    
+    message = f"Шнековый механизм {'запущен' if action == 'start' else 'остановлен'}"
+    if action == 'start' and weight:
+        message += f" (целевая масса: {weight} кг)"
+    
+    return Response(
+        {"status": "success", "message": message}
+    )
+
+
+@swagger_auto_schema(
+    method='post',
+    operation_description="Тест весов - тарировка или проверка",
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'action': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description="Действие: tare (тарировка) или check (проверка)",
+                enum=['tare', 'check']
+            ),
+            'reference_weight': openapi.Schema(
+                type=openapi.TYPE_NUMBER,
+                description="Эталонная масса для проверки (кг) - только для check"
+            ),
+        },
+    ),
+    responses={
+        200: openapi.Response(
+            description="Команда принята",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'status': openapi.Schema(type=openapi.TYPE_STRING),
+                    'message': openapi.Schema(type=openapi.TYPE_STRING),
+                    'current_weight': openapi.Schema(type=openapi.TYPE_NUMBER),
+                }
+            )
+        ),
+        400: "Неверный запрос"
+    }
+)
+@api_view(['POST'])
+@csrf_exempt
+@log_event(log_type='system', action='scales_test')
+def test_scales(request):
+    """
+    Тест весов (пьезодатчиков)
+    """
+    action = request.data.get('action', 'tare')
+    reference_weight = request.data.get('reference_weight')
+    
+    if action not in ['tare', 'check']:
+        return Response(
+            {"status": "error", "message": "Действие должно быть tare или check"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    
+    if action == 'check' and reference_weight is None:
+        return Response(
+            {"status": "error", "message": "Для проверки необходимо указать эталонную массу"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    
+    try:
+        log_data = {'action': action}
+        if reference_weight:
+            log_data['reference_weight'] = reference_weight
+        
+        Log.objects.create(
+            action='scales_test',
+            type='system',
+            description=json.dumps(log_data, ensure_ascii=False),
+        )
+    except Exception:
+        pass
+    
+    # Симуляция текущего показания весов (в реальности будет считываться с датчика)
+    current_weight = 0.0 if action == 'tare' else (reference_weight or 0.0)
+    
+    message = "Весы обнулены (тарировка выполнена)" if action == 'tare' else f"Проверка весов с эталоном {reference_weight} кг"
+    
+    return Response(
+        {
+            "status": "success",
+            "message": message,
+            "current_weight": current_weight
+        }
+    )
+
+
+@swagger_auto_schema(
+    method='post',
+    operation_description="Тест концевых выключателей",
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'position': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description="Позиция для проверки: home, bunker, pool",
+            ),
+        },
+    ),
+    responses={
+        200: openapi.Response(
+            description="Команда принята",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'status': openapi.Schema(type=openapi.TYPE_STRING),
+                    'message': openapi.Schema(type=openapi.TYPE_STRING),
+                    'triggered': openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                }
+            )
+        ),
+        400: "Неверный запрос"
+    }
+)
+@api_view(['POST'])
+@csrf_exempt
+@log_event(log_type='cart', action='limit_switch_test')
+def test_limit_switches(request):
+    """
+    Тест концевых выключателей
+    """
+    position = request.data.get('position', 'home')
+    
+    try:
+        log_data = {'position': position}
+        
+        Log.objects.create(
+            action='limit_switch_test',
+            type='cart',
+            description=json.dumps(log_data, ensure_ascii=False),
+        )
+    except Exception:
+        pass
+    
+    # Симуляция срабатывания выключателя
+    triggered = True
+    
+    return Response(
+        {
+            "status": "success",
+            "message": f"Проверка концевого выключателя в позиции {position}",
+            "triggered": triggered
+        }
+    )
+
+
+@swagger_auto_schema(
+    method='post',
+    operation_description="Тест сканера штрих-кодов",
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'barcode': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description="Штрих-код для тестирования (опционально)",
+            ),
+        },
+    ),
+    responses={
+        200: openapi.Response(
+            description="Команда принята",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'status': openapi.Schema(type=openapi.TYPE_STRING),
+                    'message': openapi.Schema(type=openapi.TYPE_STRING),
+                    'scanned': openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                    'barcode': openapi.Schema(type=openapi.TYPE_STRING),
+                }
+            )
+        ),
+        400: "Неверный запрос"
+    }
+)
+@api_view(['POST'])
+@csrf_exempt
+@log_event(log_type='system', action='barcode_test')
+def test_barcode_scanner(request):
+    """
+    Тест сканера штрих-кодов
+    """
+    barcode = request.data.get('barcode', '')
+    
+    try:
+        log_data = {'barcode': barcode if barcode else 'test_scan'}
+        
+        Log.objects.create(
+            action='barcode_test',
+            type='system',
+            description=json.dumps(log_data, ensure_ascii=False),
+        )
+    except Exception:
+        pass
+    
+    # Симуляция успешного сканирования
+    scanned = bool(barcode)
+    
+    return Response(
+        {
+            "status": "success",
+            "message": f"Сканер {'успешно считал' if scanned else 'готов к сканированию'} штрих-код",
+            "scanned": scanned,
+            "barcode": barcode if scanned else None
+        }
+    )
+
+
+@swagger_auto_schema(
+    method='post',
+    operation_description="Тест RFID-ридера для идентификации бассейнов и бункеров",
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'barcode': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description="ID RFID-метки для тестирования (опционально)",
+            ),
+        },
+    ),
+    responses={
+        200: openapi.Response(
+            description="Команда принята",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'status': openapi.Schema(type=openapi.TYPE_STRING),
+                    'message': openapi.Schema(type=openapi.TYPE_STRING),
+                    'scanned': openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                    'barcode': openapi.Schema(type=openapi.TYPE_STRING),
+                }
+            )
+        ),
+        400: "Неверный запрос"
+    }
+)
+@api_view(['POST'])
+@csrf_exempt
+@log_event(log_type='system', action='rfid_test')
+def test_rfid(request):
+    """
+    Тест RFID-ридера для идентификации бассейнов и бункеров
+    """
+    rfid_id = request.data.get('barcode', '')  # Используем barcode для совместимости с фронтендом
+    
+    try:
+        log_data = {'rfid_id': rfid_id if rfid_id else 'test_rfid_scan'}
+        
+        Log.objects.create(
+            action='rfid_test',
+            type='system',
+            description=json.dumps(log_data, ensure_ascii=False),
+        )
+    except Exception:
+        pass
+    
+    # Симуляция успешного считывания RFID-метки
+    scanned = bool(rfid_id)
+    
+    message = f"RFID-ридер {'успешно считал' if scanned else 'готов к считыванию'} метку"
+    if scanned:
+        message += f" (ID: {rfid_id})"
+    
+    return Response(
+        {
+            "status": "success",
+            "message": message,
+            "scanned": scanned,
+            "barcode": rfid_id if scanned else None
+        }
+    )
+
+
+@swagger_auto_schema(
+    method='post',
+    operation_description="Тест датчиков препятствий",
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'sensor_side': openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description="Сторона датчика: front или back",
+                enum=['front', 'back']
+            ),
+            'obstacle_detected': openapi.Schema(
+                type=openapi.TYPE_BOOLEAN,
+                description="Сигнал о наличии препятствия (для симуляции)",
+            ),
+        },
+    ),
+    responses={
+        200: openapi.Response(
+            description="Команда принята",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'status': openapi.Schema(type=openapi.TYPE_STRING),
+                    'message': openapi.Schema(type=openapi.TYPE_STRING),
+                    'obstacle_detected': openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                    'distance': openapi.Schema(type=openapi.TYPE_NUMBER),
+                }
+            )
+        ),
+        400: "Неверный запрос"
+    }
+)
+@api_view(['POST'])
+@csrf_exempt
+@log_event(log_type='cart', action='obstacle_sensor_test')
+def test_obstacle_sensors(request):
+    """
+    Тест датчиков препятствий
+    """
+    sensor_side = request.data.get('sensor_side', 'front')
+    obstacle_detected = request.data.get('obstacle_detected', False)
+    
+    if sensor_side not in ['front', 'back']:
+        return Response(
+            {"status": "error", "message": "Сторона датчика должна быть front или back"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    
+    try:
+        log_data = {
+            'sensor_side': sensor_side,
+            'obstacle_detected': obstacle_detected
+        }
+        
+        Log.objects.create(
+            action='obstacle_sensor_test',
+            type='cart',
+            description=json.dumps(log_data, ensure_ascii=False),
+        )
+    except Exception:
+        pass
+    
+    # Симуляция расстояния до препятствия
+    distance = 0.5 if obstacle_detected else 2.0
+    
+    message = f"Датчик препятствий ({sensor_side}): {'обнаружено препятствие' if obstacle_detected else 'препятствий нет'}"
+    
+    return Response(
+        {
+            "status": "success",
+            "message": message,
+            "obstacle_detected": obstacle_detected,
+            "distance": distance
+        }
+    )

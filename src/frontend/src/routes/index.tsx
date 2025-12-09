@@ -6,6 +6,7 @@ import Feeding from "./Feeding/Feeding";
 import Logs from "./Logs/Logs";
 import Analytics from "./Analytics/Analytics";
 import Settings from "./Settings/Settings";
+import Testing from "./Testing/Testing";
 import Help from "./Help/Help";
 import ErrorNotFound from "./ErrorNotFound/ErrorNotFound";
 import Login from "./Login/Login";
@@ -62,6 +63,10 @@ const router = createBrowserRouter([
                     {
                         path: "settings",
                         Component: Settings,
+                    },
+                    {
+                        path: "testing",
+                        Component: Testing,
                     },
                     {
                         path: "help",

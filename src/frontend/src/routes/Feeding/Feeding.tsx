@@ -14,6 +14,7 @@ import type { IFeedingFilterRaw, IFeedingItem } from "#types/feeding.types";
 
 import FeedingToolbox from "./FeedingToolbox/FeedingToolbox";
 import { columns, filterSchema } from "./props";
+import CartControl from "./CartControl";
 
 import "./Feeding.css";
 
@@ -67,6 +68,9 @@ const Feeding = () => {
         <>
             <Flex>
                 <Title level={3}>Управление кормлением</Title>
+            </Flex>
+            <Flex style={{ marginBottom: 16 }}>
+                <CartControl />
             </Flex>
             <DynamicTable<IFeedingItem, IFeedingFilterRaw>
                 filter={filterSchema(formData)}
