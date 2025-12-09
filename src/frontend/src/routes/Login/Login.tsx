@@ -3,15 +3,14 @@ import { LoginOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { useForm } from "antd/es/form/Form";
 import { useContext } from "react";
 
-import { useLoginMutation } from "#services/auth";
+import { useLoginMutation } from "#services/api/auth.api";
 
-import { setSession } from "#store/auth.slice";
+import { setSession } from "#services/slices/auth.slice";
 
 import Fish from "#assets/Fish/Fish";
 
 import MessageContext from "#core/contexts/MessageContext";
-import useAppDispatch from "#core/hooks/useStore/useAppDispatch";
-import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
+import useAppDispatch from "#core/hooks/useAppDispatch";
 import LoadingContext from "#core/contexts/LoadingContext";
 
 import FormRender from "#common/FormRender/FormRender";
@@ -28,10 +27,8 @@ const Login = () => {
     const dispatch = useAppDispatch();
     const { messageApi } = useContext(MessageContext);
     const { stop } = useContext(LoadingContext);
-    const [apiLogin, loginOptions] = useLoginMutation();
+    const [apiLogin] = useLoginMutation();
     const [form] = useForm();
-
-    useRTKEffects(loginOptions, LoginAction, "UPDATE", "Успешная авторизация");
 
     const onClickForgetPassword = () => {
         messageApi?.open({

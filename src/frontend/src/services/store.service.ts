@@ -12,12 +12,16 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
-import { authApi } from "#services/auth";
-import { feedingApi } from "#services/feeding";
-import { logsApi } from "#services/logs";
-import { systemApi } from "#services/system";
+import { authApi } from "#services/api/auth.api";
+import { feedingApi } from "#services/api/feeding.api";
+import { logsApi } from "#services/api/logs.api";
+import { systemApi } from "#services/api/system.api";
 
-import authSlice from "./auth.slice";
+import authSlice from "./slices/auth.slice";
+import loadingSlice from "./slices/loading.slice";
+
+import loadingMiddleware from "./middlewares/loading.middleware";
+import messageMiddleware from "./middlewares/message.middleware";
 
 const persistConfig = {
     key: "root",
@@ -31,6 +35,7 @@ const rootReducer = combineReducers({
     [logsApi.reducerPath]: logsApi.reducer,
     [systemApi.reducerPath]: systemApi.reducer,
     auth: authSlice.reducer,
+    loading: loadingSlice.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -46,7 +51,9 @@ export const store = configureStore({
             authApi.middleware,
             feedingApi.middleware,
             logsApi.middleware,
-            systemApi.middleware
+            systemApi.middleware,
+            loadingMiddleware,
+            messageMiddleware
         ),
 });
 

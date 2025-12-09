@@ -2,9 +2,7 @@ import type React from "react";
 import { Button, Flex, type FormInstance } from "antd";
 import type { Dayjs } from "dayjs";
 
-import { useCreateFeedingMutation } from "#services/feeding";
-
-import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
+import { useCreateFeedingMutation } from "#services/api/feeding.api";
 
 import type { IFeedingCreateEditRequest } from "#types/feeding.types";
 
@@ -16,9 +14,7 @@ interface FeedingModalFooterProps {
 }
 
 const FeedingModalFooter: React.FC<FeedingModalFooterProps> = ({ onCancel, form }) => {
-    const [createFeedingApi, options] = useCreateFeedingMutation();
-
-    useRTKEffects(options, "CREATE_FEEDING", "UPDATE", "Успешно создано");
+    const [createFeedingApi] = useCreateFeedingMutation();
 
     const createFeedingApiWrapper = (data: IFeedingCreateEditRequest) => {
         createFeedingApi(data).then(onCancel).catch();

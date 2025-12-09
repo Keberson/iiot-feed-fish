@@ -1,6 +1,6 @@
 import { Flex, Typography } from "antd";
 
-import useAppSelector from "#core/hooks/useStore/useAppSelector";
+import useAppSelector from "#core/hooks/useAppSelector";
 
 import "./ErrorNotFound.css";
 

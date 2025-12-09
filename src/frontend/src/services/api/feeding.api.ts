@@ -12,7 +12,7 @@ import type {
 
 import type { IOptionalPaginationRequest } from "#types/api.types";
 
-import { logsApi } from "./logs";
+import { logsApi } from "./logs.api";
 
 export const feedingApi = createApi({
     reducerPath: "feedingLogApi",

@@ -5,14 +5,13 @@ import Sider from "antd/es/layout/Sider";
 
 import Fish from "#assets/Fish/Fish";
 
-import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
-import useAppSelector from "#core/hooks/useStore/useAppSelector";
+import useAppSelector from "#core/hooks/useAppSelector";
 import LoadingContext from "#core/contexts/LoadingContext";
-import useAppDispatch from "#core/hooks/useStore/useAppDispatch";
+import useAppDispatch from "#core/hooks/useAppDispatch";
 
-import { useCheckTokenMutation } from "#services/auth";
+import { useCheckTokenMutation } from "#services/api/auth.api";
 
-import { setSession } from "#store/auth.slice";
+import { setSession } from "#services/slices/auth.slice";
 
 import type { IBaseErrorResponse } from "#types/api.types";
 
@@ -29,11 +28,9 @@ const DashboardRootLayout = () => {
     const dispatch = useAppDispatch();
     const { pathname } = useLocation();
     const [collapsed, setCollapsed] = useState(false);
-    const [checkTokenApi, options] = useCheckTokenMutation();
+    const [checkTokenApi] = useCheckTokenMutation();
     const session = useAppSelector((state) => state.auth.session);
     const { stopAll } = useContext(LoadingContext);
-
-    useRTKEffects(options, "DASHBOARD_CHECK_TOKEN");
 
     useEffect(() => {
         setIsCorrect(false);

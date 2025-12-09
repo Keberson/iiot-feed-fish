@@ -1,4 +1,4 @@
-import type { AuthState } from "#store/auth.slice";
+import type { AuthState } from "#services/slices/auth.slice";
 
 export const prepareHeaders = (headers: Headers, { getState }: { getState: () => unknown }) => {
     headers.set(

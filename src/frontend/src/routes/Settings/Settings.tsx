@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 
 import FormRender from "#common/FormRender/FormRender";
 
-import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
-
-import { useGetSystemSettingsQuery, useUpdateSystemSettingsMutation } from "#services/system";
+import {
+    useGetSystemSettingsQuery,
+    useUpdateSystemSettingsMutation,
+} from "#services/api/system.api";
 
 import type { ISystemSettings, ISystemSettingsForm } from "#types/system.type";
 
@@ -21,11 +22,8 @@ const Settings = () => {
     const [isChangedData, setIsChangedData] = useState<boolean>(false);
     const [form] = useForm<ISystemSettingsForm>();
     const values = useWatch([], form);
-    const { data, isLoading, error, status } = useGetSystemSettingsQuery();
-    const [updateSettings, options] = useUpdateSystemSettingsMutation();
-
-    useRTKEffects({ isLoading, error, status }, "GET_SETTINGS");
-    useRTKEffects(options, "UPDATE_SETTINGS", "UPDATE", "Успешно обновлены настройки Wi-Fi");
+    const { data } = useGetSystemSettingsQuery();
+    const [updateSettings] = useUpdateSystemSettingsMutation();
 
     const handleSetInitState = (rawData: ISystemSettings | ISystemSettingsForm) => {
         const state =

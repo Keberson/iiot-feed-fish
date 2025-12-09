@@ -4,7 +4,7 @@ import { prepareHeaders } from "#core/functions/prepareHeaders/prepareHeader";
 
 import type { ISystemSettings, ISystemSettingsForm, ISystemStatus } from "#types/system.type";
 
-import { logsApi } from "./logs";
+import { logsApi } from "./logs.api";
 
 export const systemApi = createApi({
     reducerPath: "systemApi",

@@ -1,4 +1,4 @@
-import useAppSelector from "#core/hooks/useStore/useAppSelector";
+import useAppSelector from "#core/hooks/useAppSelector";
 import type React from "react";
 import { type ReactNode } from "react";
 import { Navigate, useLocation } from "react-router";
@@ -9,7 +9,7 @@ interface SidenavWrapperProps {
 
 const RedirectWrapper: React.FC<SidenavWrapperProps> = ({ children }) => {
     const location = useLocation();
-    const session = useAppSelector(state => state.auth.session);
+    const session = useAppSelector((state) => state.auth.session);
 
     if (location.pathname === "/404") {
         return children;

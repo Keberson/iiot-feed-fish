@@ -3,11 +3,10 @@ import { Button, Flex } from "antd";
 import { useForm } from "antd/es/form/Form";
 
 import ModalContext from "#core/contexts/ModalContext";
-import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
 
 import FormRender from "#common/FormRender/FormRender";
 
-import { useLazyGetFeedingFormDataQuery } from "#services/feeding";
+import { useLazyGetFeedingFormDataQuery } from "#services/api/feeding.api";
 
 import FeedingModalFooter from "./FeedingModalFooter/FeedingModalFooter";
 import { createSchema } from "./props";
@@ -17,9 +16,7 @@ import "./FeedingToolbox.css";
 const FeedingToolbox = () => {
     const { open, close } = useContext(ModalContext);
     const [form] = useForm();
-    const [getFormData, options] = useLazyGetFeedingFormDataQuery();
-
-    useRTKEffects(options, "FEEDING_FORM-DATA");
+    const [getFormData] = useLazyGetFeedingFormDataQuery();
 
     const closeModal = () => {
         close();

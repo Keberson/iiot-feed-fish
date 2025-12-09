@@ -6,11 +6,10 @@ import type { IFeedingTableItem } from "#types/feeding.types";
 import DynamicTable from "#common/DynamicTable/DynamicTable";
 import ChartRender from "#common/ChartRender/ChartRender/ChartRender";
 
-import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
-import useAppSelector from "#core/hooks/useStore/useAppSelector";
+import useAppSelector from "#core/hooks/useAppSelector";
 
-import { useGetFeedingListQuery } from "#services/feeding";
-import { useGetSystemStatusQuery } from "#services/system";
+import { useGetFeedingListQuery } from "#services/api/feeding.api";
+import { useGetSystemStatusQuery } from "#services/api/system.api";
 
 import { columns, getGreetingTitle, statusToView } from "./props";
 
@@ -24,30 +23,13 @@ const General = () => {
     const [status, setStatus] = useState<{ icon: ReactNode; label: string }>();
     const greeting = getGreetingTitle();
 
-    const {
-        data: feedingList,
-        isLoading: loadingFeedingList,
-        error: errorFeedingList,
-    } = useGetFeedingListQuery({
+    const { data: feedingList } = useGetFeedingListQuery({
         pagination: {
             current: pagination[0],
             itemsPerPage: pagination[1],
         },
     });
-    const {
-        data: systemStatus,
-        isLoading: loadingSystemStatus,
-        error: errorSystemStatus,
-    } = useGetSystemStatusQuery();
-
-    useRTKEffects(
-        { isLoading: loadingFeedingList, error: errorFeedingList },
-        "GET_FEEDING_GENERAL"
-    );
-    useRTKEffects(
-        { isLoading: loadingSystemStatus, error: errorSystemStatus },
-        "GET_SYSTEM_STATUS"
-    );
+    const { data: systemStatus } = useGetSystemStatusQuery();
 
     useEffect(() => {
         setStatus(statusToView(systemStatus?.status));

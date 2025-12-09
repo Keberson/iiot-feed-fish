@@ -1,8 +1,6 @@
 import { Button, Flex, type FormInstance } from "antd";
 
-import { useLazyDownloadCsvQuery } from "#services/feeding";
-
-import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
+import { useLazyDownloadCsvQuery } from "#services/api/feeding.api";
 
 import "./DynamicTableExportFooter.css";
 
@@ -11,9 +9,7 @@ interface DynamicTableExportFooterProps {
 }
 
 const DynamicTableExportFooter: React.FC<DynamicTableExportFooterProps> = ({ form }) => {
-    const [download, options] = useLazyDownloadCsvQuery();
-
-    useRTKEffects(options, "DOWNLOAD_FEEDING", "UPDATE", "Успешно экспортировано");
+    const [download] = useLazyDownloadCsvQuery();
 
     const onClick = () => {
         const { weight, ...otherData } = form.getFieldsValue();

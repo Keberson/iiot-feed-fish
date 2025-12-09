@@ -6,9 +6,7 @@ import {
     useGetFeedingFormDataQuery,
     useGetFeedingListQuery,
     usePatchFeedingByIdMutation,
-} from "#services/feeding";
-
-import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
+} from "#services/api/feeding.api";
 
 import DynamicTable from "#common/DynamicTable/DynamicTable";
 
@@ -24,11 +22,7 @@ const { Title } = Typography;
 const Feeding = () => {
     const [pagination, setPagination] = useState<[number, number]>([1, 10]);
     const [filter, setFilter] = useState<IFeedingFilterRaw>();
-    const {
-        data: feedingList,
-        isLoading: isLoadingList,
-        error: errorList,
-    } = useGetFeedingListQuery({
+    const { data: feedingList } = useGetFeedingListQuery({
         pagination: {
             current: pagination[0],
             itemsPerPage: pagination[1],
@@ -41,18 +35,9 @@ const Feeding = () => {
         },
     });
 
-    const [deleteFeeding, optionsDelete] = useDeleteFeedingByIdMutation();
-    const {
-        data: formData,
-        isLoading: isLoadingFormData,
-        error: errorFormData,
-    } = useGetFeedingFormDataQuery();
-    const [patchFeeding, optionsPatch] = usePatchFeedingByIdMutation();
-
-    useRTKEffects({ isLoading: isLoadingList, error: errorList }, "GET_FEEDING");
-    useRTKEffects({ isLoading: isLoadingFormData, error: errorFormData }, "GET_FORM-DATA");
-    useRTKEffects(optionsDelete, "DELETE_FEEDING", "UPDATE", "Успешно удалено");
-    useRTKEffects(optionsPatch, "PATCH_FEEDING", "UPDATE", "Успешно обновлено");
+    const [deleteFeeding] = useDeleteFeedingByIdMutation();
+    const { data: formData } = useGetFeedingFormDataQuery();
+    const [patchFeeding] = usePatchFeedingByIdMutation();
 
     const handleUpdateItem = (partialItems: unknown, item: unknown) => {
         const itemCasted = item as IFeedingItem;

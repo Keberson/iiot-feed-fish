@@ -3,11 +3,9 @@ import { Typography } from "antd";
 
 import DynamicTable from "#common/DynamicTable/DynamicTable";
 
-import { useRTKEffects } from "#core/hooks/useRTKEffects/useRTKEffects";
-
 import type { ILogFilter, ILogTableItem } from "#types/log.types";
 
-import { useGetLogsListQuery } from "#services/logs";
+import { useGetLogsListQuery } from "#services/api/logs.api";
 
 import { columns, filterSchema } from "./props";
 
@@ -18,12 +16,10 @@ const { Title } = Typography;
 const Logs = () => {
     const [pagination, setPagination] = useState<[number, number]>([1, 10]);
     const [filter, setFilter] = useState<ILogFilter>();
-    const { data, isLoading, error } = useGetLogsListQuery({
+    const { data } = useGetLogsListQuery({
         pagination: { current: pagination[0], itemsPerPage: pagination[1] },
         filter,
     });
-
-    useRTKEffects({ isLoading, error }, "LOG_LIST");
 
     return (
         <>
