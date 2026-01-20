@@ -1226,3 +1226,50 @@ def test_obstacle_sensors(request):
             "distance": distance
         }
     )
+
+
+@swagger_auto_schema(
+    method='get',
+    operation_description="Получить список запланированных задач кормления в MQTT",
+    responses={
+        200: openapi.Response(
+            description="Список запланированных задач",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'jobs': openapi.Schema(
+                        type=openapi.TYPE_ARRAY,
+                        items=openapi.Schema(
+                            type=openapi.TYPE_OBJECT,
+                            properties={
+                                'job_id': openapi.Schema(type=openapi.TYPE_STRING),
+                                'task_uuid': openapi.Schema(type=openapi.TYPE_STRING),
+                                'time': openapi.Schema(type=openapi.TYPE_STRING),
+                                'next_run_time': openapi.Schema(type=openapi.TYPE_STRING),
+                                'trigger': openapi.Schema(type=openapi.TYPE_STRING),
+                            }
+                        )
+                    )
+                }
+            )
+        )
+    }
+)
+@api_view(['GET'])
+def get_scheduled_jobs_view(request):
+    """
+    Получить список всех запланированных задач кормления
+    """
+    from .scheduler import get_scheduled_jobs
+    
+    try:
+        jobs = get_scheduled_jobs()
+        return Response({
+            'jobs': jobs,
+            'total': len(jobs)
+        })
+    except Exception as e:
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

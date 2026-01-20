@@ -9,7 +9,7 @@ const errorMessages: Record<number, string> = {
     401: "Ошибка при авторизации",
 };
 
-const messageMiddleware: Middleware = () => (next) => (action) => {
+const messageMiddleware: Middleware = (_store) => (next) => (action) => {
     if (isRejectedWithValue(action)) {
         const errorCasted = action.payload as IBaseErrorResponse;
         const content =

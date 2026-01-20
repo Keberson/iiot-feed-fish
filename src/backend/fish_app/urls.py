@@ -32,4 +32,7 @@ urlpatterns = [
     path('testing/barcode-scanner', views.test_barcode_scanner, name='test_barcode_scanner'),
     path('testing/rfid', views.test_rfid, name='test_rfid'),
     path('testing/obstacle-sensors', views.test_obstacle_sensors, name='test_obstacle_sensors'),
+    
+    # Scheduler endpoints
+    path('scheduler/jobs', views.get_scheduled_jobs_view, name='get_scheduled_jobs'),
 ] 
