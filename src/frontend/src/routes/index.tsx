@@ -4,9 +4,9 @@ import DashboardRootLayout from "./DashboardRootLayout/DashboardRootLayout";
 import General from "./General/General";
 import Feeding from "./Feeding/Feeding";
 import Logs from "./Logs/Logs";
-import Analytics from "./Analytics/Analytics";
-import Settings from "./Settings/Settings";
-import Testing from "./Testing/Testing";
+// import Analytics from "./Analytics/Analytics";
+// import Settings from "./Settings/Settings";
+// import Testing from "./Testing/Testing";
 import Help from "./Help/Help";
 import ErrorNotFound from "./ErrorNotFound/ErrorNotFound";
 import Login from "./Login/Login";
@@ -56,18 +56,18 @@ const router = createBrowserRouter([
                         path: "logs",
                         Component: Logs,
                     },
-                    {
-                        path: "analytics",
-                        Component: Analytics,
-                    },
-                    {
-                        path: "settings",
-                        Component: Settings,
-                    },
-                    {
-                        path: "testing",
-                        Component: Testing,
-                    },
+                    // {
+                    //     path: "analytics",
+                    //     Component: Analytics,
+                    // },
+                    // {
+                    //     path: "settings",
+                    //     Component: Settings,
+                    // },
+                    // {
+                    //     path: "testing",
+                    //     Component: Testing,
+                    // },
                     {
                         path: "help",
                         Component: Help,

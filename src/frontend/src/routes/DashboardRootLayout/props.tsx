@@ -2,11 +2,11 @@ import type { ItemType } from "antd/es/menu/interface";
 import {
     ContainerOutlined,
     HomeOutlined,
-    LineChartOutlined,
+    // LineChartOutlined,
     QuestionCircleOutlined,
     ScheduleOutlined,
-    SettingOutlined,
-    ExperimentOutlined,
+    // SettingOutlined,
+    // ExperimentOutlined,
 } from "@ant-design/icons";
 
 import MenuItem from "./MenuItem/MenuItem";
@@ -28,21 +28,21 @@ export const items = (prefix: string): ItemType[] =>
             url: "logs",
             icon: <ContainerOutlined />,
         },
-        {
-            label: "Аналитика",
-            url: "analytics",
-            icon: <LineChartOutlined />,
-        },
-        {
-            label: "Настройки",
-            url: "settings",
-            icon: <SettingOutlined />,
-        },
-        {
-            label: "Тестирование",
-            url: "testing",
-            icon: <ExperimentOutlined />,
-        },
+        // {
+        //     label: "Аналитика",
+        //     url: "analytics",
+        //     icon: <LineChartOutlined />,
+        // },
+        // {
+        //     label: "Настройки",
+        //     url: "settings",
+        //     icon: <SettingOutlined />,
+        // },
+        // {
+        //     label: "Тестирование",
+        //     url: "testing",
+        //     icon: <ExperimentOutlined />,
+        // },
         {
             label: "Помощь",
             url: "help",
