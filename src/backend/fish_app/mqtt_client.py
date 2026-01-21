@@ -17,6 +17,7 @@ MQTT_CONFIG = {
     'user': getattr(settings, 'MQTT_USER', 'user'),
     'password': getattr(settings, 'MQTT_PASSWORD', 'iiot-mqtt-fish'),
     'requests_topic': getattr(settings, 'MQTT_REQUESTS_TOPIC', 'bunker'),
+    'cart_topic': getattr(settings, 'MQTT_CART_TOPIC', 'cart'),
     'logs_topic': getattr(settings, 'MQTT_LOGS_TOPIC', 'logs'),
 }
 
@@ -111,6 +112,58 @@ def send_feeding_command(pool_id: str, feed_id: str, weight: float, pool_name: s
             
     except Exception as e:
         logger.error(f"MQTT: Исключение при отправке команды кормления: {e}")
+        return False
+
+
+def send_cart_command(pool_id: str, feed_id: str, weight: float, pool_name: str = None, feed_name: str = None) -> bool:
+    """
+    Отправить команду кормления в топик cart MQTT брокера
+    
+    Args:
+        pool_id: UUID бассейна
+        feed_id: UUID корма
+        weight: Масса корма в кг
+        pool_name: Название бассейна (опционально)
+        feed_name: Название корма (опционально)
+    
+    Returns:
+        True если сообщение отправлено успешно, False в противном случае
+    """
+    try:
+        client = get_mqtt_client()
+        
+        # Проверяем подключение
+        if not client.is_connected():
+            logger.warning("MQTT: Клиент не подключен, попытка переподключения...")
+            try:
+                client.reconnect()
+            except Exception as reconnect_error:
+                logger.error(f"MQTT: Не удалось переподключиться: {reconnect_error}")
+                return False
+        
+        message = {
+            'pool_id': pool_id,
+            'feed_id': feed_id,
+            'weight': float(weight),
+        }
+        
+        if pool_name:
+            message['pool_name'] = pool_name
+        if feed_name:
+            message['feed_name'] = feed_name
+        
+        payload = json.dumps(message, ensure_ascii=False)
+        result = client.publish(MQTT_CONFIG['cart_topic'], payload, qos=1)
+        
+        if result.rc == mqtt.MQTT_ERR_SUCCESS:
+            logger.info(f"MQTT: Команда кормления отправлена в топик {MQTT_CONFIG['cart_topic']}: {payload}")
+            return True
+        else:
+            logger.error(f"MQTT: Ошибка отправки сообщения в топик cart, код {result.rc}")
+            return False
+            
+    except Exception as e:
+        logger.error(f"MQTT: Исключение при отправке команды кормления в топик cart: {e}")
         return False
 
 
