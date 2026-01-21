@@ -49,7 +49,20 @@ services:
         expose:
             - $PG_PORT
         volumes:
-            - iot-db:/var/lib/postgresql/data/
+            - iot-db:/var/lib/postgresql
+        networks:
+            - iot-network
+
+    mqtt:
+        image: eclipse-mosquitto:2
+        container_name: mqtt
+        restart: always
+        # Открываем порт брокера наружу, чтобы при необходимости можно было подключаться с хоста
+        ports:
+            - "1883:1883"
+        # Простейшая конфигурация брокера: слушаем 1883 и разрешаем анонимные подключения
+        volumes:
+            - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
         networks:
             - iot-network
 
@@ -60,9 +73,15 @@ services:
         container_name: backend
         env_file:
             - .env
+        environment:
+            # Переопределяем MQTT-хост/порт для работы с брокером в docker-compose
+            MQTT_SERVER: mqtt
+            MQTT_PORT: 1883
         depends_on:
             db:
                 condition: service_healthy
+            mqtt:
+                condition: service_started
         expose:
             - $BACK_PORT
         networks:

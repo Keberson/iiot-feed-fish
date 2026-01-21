@@ -1,9 +1,8 @@
-import { Card, Flex, Tabs, Typography, Button, message, InputNumber, Space, Select } from "antd";
+import { Card, Flex, Tabs, Typography, Button, message, InputNumber, Space } from "antd";
 import {
     RocketOutlined,
     SettingOutlined,
     BarcodeOutlined,
-    ExperimentOutlined,
     DashboardOutlined,
     PlayCircleOutlined,
     StopOutlined,

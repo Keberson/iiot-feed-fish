@@ -115,7 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -163,3 +163,11 @@ SWAGGER_SETTINGS = {
     'JSON_EDITOR': True,
     'VALIDATOR_URL': None,
 }
+
+# MQTT Settings
+MQTT_SERVER = os.getenv('MQTT_SERVER', '158.160.78.241')
+MQTT_PORT = int(os.getenv('MQTT_PORT', '1883'))
+MQTT_USER = os.getenv('MQTT_USER', 'user')
+MQTT_PASSWORD = os.getenv('MQTT_PASSWORD', 'iiot-mqtt-fish')
+MQTT_REQUESTS_TOPIC = os.getenv('MQTT_REQUESTS_TOPIC', 'bunker')
+MQTT_LOGS_TOPIC = os.getenv('MQTT_LOGS_TOPIC', 'logs')

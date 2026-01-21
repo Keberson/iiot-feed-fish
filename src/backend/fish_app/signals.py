@@ -1,9 +1,9 @@
 import uuid
-from django.db.models.signals import pre_save, post_migrate
+from django.db.models.signals import pre_save, post_migrate, post_save, post_delete
 from django.dispatch import receiver
 from django.contrib.auth.hashers import make_password
 
-from .models import Pool, Feed, Timetable, Feeding, Log, User, Period
+from .models import Pool, Feed, Timetable, Feeding, Log, User, Period, FeedingTask
 
 @receiver(pre_save, sender=Pool)
 def create_pool_uuid(sender, instance, **kwargs):
@@ -107,3 +107,22 @@ def create_default_periods(sender, **kwargs):
         ]
         for period_name in periods:
             Period.objects.get_or_create(name=period_name)
+
+
+# Сигналы для планирования задач кормления
+@receiver(post_save, sender=FeedingTask)
+def schedule_feeding_task_signal(sender, instance, created, **kwargs):
+    """
+    Планировать задачу кормления при создании или обновлении
+    """
+    from .scheduler import schedule_feeding_task
+    schedule_feeding_task(instance)
+
+
+@receiver(post_delete, sender=FeedingTask)
+def remove_scheduled_feeding_task_signal(sender, instance, **kwargs):
+    """
+    Удалить запланированную задачу кормления при удалении
+    """
+    from .scheduler import remove_scheduled_task
+    remove_scheduled_task(str(instance.uuid))
