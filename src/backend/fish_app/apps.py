@@ -31,6 +31,20 @@ class FishAppConfig(AppConfig):
             except Exception as e:
                 logger.error(f"Ошибка при инициализации планировщика задач: {e}")
         
-        # Запускаем в отдельном потоке
+        def init_mqtt_subscriber_delayed():
+            try:
+                import time
+                time.sleep(3)  # Даем время на полную инициализацию Django и планировщика
+                from .mqtt_client import start_logs_subscription
+                start_logs_subscription()
+                logger.info("Подписка на MQTT логи инициализирована")
+            except Exception as e:
+                logger.error(f"Ошибка при инициализации подписки на MQTT логи: {e}")
+        
+        # Запускаем планировщик в отдельном потоке
         thread = threading.Thread(target=init_scheduler_delayed, daemon=True)
-        thread.start() 
+        thread.start()
+        
+        # Запускаем подписку на MQTT логи в отдельном потоке
+        mqtt_thread = threading.Thread(target=init_mqtt_subscriber_delayed, daemon=True)
+        mqtt_thread.start() 
