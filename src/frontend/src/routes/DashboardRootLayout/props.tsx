@@ -2,7 +2,7 @@ import type { ItemType } from "antd/es/menu/interface";
 import {
     ContainerOutlined,
     HomeOutlined,
-    // LineChartOutlined,
+    LineChartOutlined,
     QuestionCircleOutlined,
     ScheduleOutlined,
     // SettingOutlined,
@@ -28,11 +28,11 @@ export const items = (prefix: string): ItemType[] =>
             url: "logs",
             icon: <ContainerOutlined />,
         },
-        // {
-        //     label: "Аналитика",
-        //     url: "analytics",
-        //     icon: <LineChartOutlined />,
-        // },
+        {
+            label: "Аналитика",
+            url: "analytics",
+            icon: <LineChartOutlined />,
+        },
         // {
         //     label: "Настройки",
         //     url: "settings",

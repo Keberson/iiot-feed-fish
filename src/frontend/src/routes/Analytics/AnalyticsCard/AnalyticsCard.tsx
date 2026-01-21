@@ -1,4 +1,5 @@
 import { Card, Flex, Typography } from "antd";
+import { useEffect, useState } from "react";
 
 import ChartRender from "#common/ChartRender/ChartRender/ChartRender";
 import AnalyticsCardToolbox from "#common/AnalyticsCardToolbox/AnalyticsCardToolbox";
@@ -11,7 +12,37 @@ interface AnalyticsCardProps {
     title: string;
 }
 
+interface ChartData {
+    name: string;
+    delta: number;
+}
+
+const generateRandomData = (isFeedingStats: boolean = false): ChartData[] => {
+    const pools = ["Бассейн 1", "Бассейн 2", "Бассейн 3", "Бассейн 4", "Бассейн 5", "Бассейн 6"];
+    return pools.map((name) => ({
+        name,
+        delta: isFeedingStats
+            ? Math.floor(Math.random() * 20) + 5 // Для статистики кормлений: от 5 до 25
+            : Math.floor(Math.random() * 100) + 50, // Для расхода корма: от 50 до 150
+    }));
+};
+
 const AnalyticsCard: React.FC<AnalyticsCardProps> = ({ title }) => {
+    const isFeedingStats = title === "Статистика кормлений";
+    const [chartData, setChartData] = useState<ChartData[]>(generateRandomData(isFeedingStats));
+
+    useEffect(() => {
+        // Обновляем данные каждые 3 секунды
+        const interval = setInterval(() => {
+            setChartData(generateRandomData(isFeedingStats));
+        }, 3000);
+
+        return () => clearInterval(interval);
+    }, [isFeedingStats]);
+
+    // Разные цвета для разных графиков
+    const barColor = isFeedingStats ? "#52c41a" : "#8884d8";
+
     return (
         <Card
             title={
@@ -24,33 +55,8 @@ const AnalyticsCard: React.FC<AnalyticsCardProps> = ({ title }) => {
             }
         >
             <ChartRender
-                data={[
-                    {
-                        name: "Бассейн 1",
-                        delta: 100,
-                    },
-                    {
-                        name: "Бассейн 2",
-                        delta: 150,
-                    },
-                    {
-                        name: "Бассейн 3",
-                        delta: 140,
-                    },
-                    {
-                        name: "Бассейн 4",
-                        delta: 160,
-                    },
-                    {
-                        name: "Бассейн 5",
-                        delta: 110,
-                    },
-                    {
-                        name: "Бассейн 6",
-                        delta: 90,
-                    },
-                ]}
-                bars={[{ dataKey: "delta", fill: "#8884d8" }]}
+                data={chartData}
+                bars={[{ dataKey: "delta", fill: barColor }]}
                 gridDash="3 3"
                 axisX
                 axisXKey="name"

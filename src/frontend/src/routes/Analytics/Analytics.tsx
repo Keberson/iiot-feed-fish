@@ -14,10 +14,9 @@ const Analytics = () => {
             <Title level={3}>Аналитика</Title>
             <AnalyticsToolbox />
             <Flex className="analytics-layout">
-                <AnalyticsCard title="Графики" />
-                <AnalyticsTimelineCard title="Стаутс задач" />
-                {/* <Card title="Аналитика 3">Описание</Card>
-                <Card title="Аналитика 4">Описание</Card> */}
+                <AnalyticsCard title="Расход корма по бассейнам" />
+                <AnalyticsCard title="Статистика кормлений" />
+                <AnalyticsTimelineCard title="Статус задач" />
             </Flex>
         </>
     );
