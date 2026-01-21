@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-ef$l32hmx@t@epxrrp8-)9=t=yo7b48#$==+m#rc7y57!(fw8c
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', "localhost").split(",")
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', "158.160.94.8,localhost").split(",")
 
 
 # Application definition
@@ -165,9 +165,10 @@ SWAGGER_SETTINGS = {
 }
 
 # MQTT Settings
-MQTT_SERVER = os.getenv('MQTT_SERVER', '158.160.78.241')
+MQTT_SERVER = os.getenv('MQTT_SERVER', '158.160.94.8')
 MQTT_PORT = int(os.getenv('MQTT_PORT', '1883'))
 MQTT_USER = os.getenv('MQTT_USER', 'user')
 MQTT_PASSWORD = os.getenv('MQTT_PASSWORD', 'iiot-mqtt-fish')
 MQTT_REQUESTS_TOPIC = os.getenv('MQTT_REQUESTS_TOPIC', 'bunker')
+MQTT_CART_TOPIC = os.getenv('MQTT_CART_TOPIC', 'cart')
 MQTT_LOGS_TOPIC = os.getenv('MQTT_LOGS_TOPIC', 'logs')

@@ -17,7 +17,7 @@ def test_mqtt_logs_subscription():
     print("=" * 60)
     
     # Получаем настройки MQTT
-    mqtt_server = getattr(settings, 'MQTT_SERVER', '158.160.78.241')
+    mqtt_server = getattr(settings, 'MQTT_SERVER', '158.160.94.8')
     mqtt_port = getattr(settings, 'MQTT_PORT', 1883)
     mqtt_user = getattr(settings, 'MQTT_USER', 'user')
     mqtt_password = getattr(settings, 'MQTT_PASSWORD', 'iiot-mqtt-fish')

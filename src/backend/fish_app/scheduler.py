@@ -10,7 +10,7 @@ from django.utils import timezone
 from django.conf import settings
 
 from .models import FeedingTask, Pool, Feed
-from .mqtt_client import send_feeding_command
+from .mqtt_client import send_feeding_command, send_cart_command
 from .route_generator import calculate_period_times
 
 logger = logging.getLogger(__name__)
@@ -137,7 +137,7 @@ def schedule_feeding_task(task: FeedingTask):
 
 def send_scheduled_feeding_message(task_uuid: str):
     """
-    Отправить сообщение кормления в MQTT (вызывается планировщиком)
+    Отправить отложенное сообщение кормления в топик cart MQTT (вызывается планировщиком)
     
     Args:
         task_uuid: UUID задачи кормления
@@ -145,8 +145,8 @@ def send_scheduled_feeding_message(task_uuid: str):
     try:
         task = FeedingTask.objects.get(uuid=task_uuid)
         
-        # Отправляем команду в MQTT
-        success = send_feeding_command(
+        # Отправляем команду в топик cart
+        success = send_cart_command(
             pool_id=str(task.pool.uuid),
             feed_id=str(task.feed.uuid),
             weight=float(task.weight),
@@ -156,12 +156,12 @@ def send_scheduled_feeding_message(task_uuid: str):
         
         if success:
             logger.info(
-                f"Отправлена команда кормления: бассейн={task.pool.name}, "
+                f"Отправлена команда кормления в топик cart: бассейн={task.pool.name}, "
                 f"корм={task.feed.name}, масса={task.weight} кг"
             )
         else:
             logger.error(
-                f"Не удалось отправить команду кормления для задачи {task_uuid}"
+                f"Не удалось отправить команду кормления в топик cart для задачи {task_uuid}"
             )
             
     except FeedingTask.DoesNotExist:

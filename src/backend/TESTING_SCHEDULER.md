@@ -59,7 +59,7 @@ GET /api/scheduler/jobs
 Используйте MQTT клиент для подписки на топик `bunker`:
 
 ```bash
-mosquitto_sub -h 158.160.78.241 -p 1883 -u user -P iiot-mqtt-fish -t bunker -v
+mosquitto_sub -h 158.160.94.8 -p 1883 -u user -P iiot-mqtt-fish -t bunker -v
 ```
 
 Или используйте онлайн клиент: https://www.hivemq.com/demos/websocket-client/
@@ -145,7 +145,7 @@ mosquitto_sub -h 158.160.78.241 -p 1883 -u user -P iiot-mqtt-fish -t bunker -v
 **Решение:**
 1. Проверьте подключение к MQTT брокеру (логи должны содержать "MQTT: Подключение установлено")
 2. Проверьте настройки MQTT в `settings.py`
-3. Проверьте доступность MQTT брокера: `158.160.78.241:1883`
+3. Проверьте доступность MQTT брокера: `158.160.94.8:1883`
 
 ### Проблема: Неправильное время кормления
 
