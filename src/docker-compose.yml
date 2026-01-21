@@ -60,9 +60,14 @@ services:
         # Открываем порт брокера наружу, чтобы при необходимости можно было подключаться с хоста
         ports:
             - "1883:1883"
-        # Простейшая конфигурация брокера: слушаем 1883 и разрешаем анонимные подключения
+        # Конфигурация брокера с аутентификацией пользователя
         volumes:
             - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+            - ./mosquitto-entrypoint.sh:/mosquitto-entrypoint.sh
+            - mosquitto-data:/mosquitto/data
+            - mosquitto-config:/mosquitto/config
+        entrypoint: ["/bin/sh", "/mosquitto-entrypoint.sh"]
+        command: ["-c", "/mosquitto/config/mosquitto.conf"]
         networks:
             - iot-network
 
@@ -90,6 +95,8 @@ services:
 volumes:
     iot-db:
     react-build:
+    mosquitto-data:
+    mosquitto-config:
 
 networks:
     iot-network:
