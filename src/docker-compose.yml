@@ -79,9 +79,11 @@ services:
         env_file:
             - .env
         environment:
-            # Переопределяем MQTT-хост/порт для работы с брокером в docker-compose
-            MQTT_SERVER: mqtt
-            MQTT_PORT: 1883
+            # Переопределяем MQTT-хост/порт для работы с брокером
+            # Для локального брокера в Docker используйте: mqtt
+            # Для внешнего брокера используйте IP адрес сервера: 158.160.94.8
+            MQTT_SERVER: ${MQTT_SERVER:-mqtt}
+            MQTT_PORT: ${MQTT_PORT:-1883}
         depends_on:
             db:
                 condition: service_healthy

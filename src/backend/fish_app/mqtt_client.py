@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 # MQTT настройки из settings
 MQTT_CONFIG = {
-    'server': getattr(settings, 'MQTT_SERVER', '158.160.78.241'),
+    'server': getattr(settings, 'MQTT_SERVER', '158.160.94.8'),
     'port': getattr(settings, 'MQTT_PORT', 1883),
     'user': getattr(settings, 'MQTT_USER', 'user'),
     'password': getattr(settings, 'MQTT_PASSWORD', 'iiot-mqtt-fish'),
