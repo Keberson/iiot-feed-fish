@@ -1,10 +1,10 @@
-from django.urls import path
+from django.urls import path, re_path
 from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('auth/login', views.login, name='login'),
-    path('auth/token', views.validate_token, name='validate_token'),
+    re_path(r'^auth/login/?$', views.login, name='login'),
+    re_path(r'^auth/token/?$', views.validate_token, name='validate_token'),
     
     # Feeding endpoints
     path('feeding/form-data', views.get_feeding_form_data, name='feeding_form_data'),
